@@ -1,4 +1,4 @@
-import numpy as pd
+import pandas as pd
 
 
 def present_value_factor(
@@ -168,18 +168,18 @@ def variable_costs_profile(
 
 
 def build_cashflow(
-    capital_cost,
-    product_flow_kg,
-    fixed_opex_mgbp_yr,
-    ng_flow_hhv,
-    ng_flow_kgh,
-    carbon_capture_rate,
-    variable_opex_gbp_hr,
-    load_factors,
-    gas_prices,
-    carbon_prices,
-    co2_transport_storage_cost=19.0,
-):
+    capital_cost: dict,
+    product_flow_kg: int,
+    fixed_opex_mgbp_yr: int,
+    ng_flow_hhv: int,
+    ng_flow_kgh: int,
+    carbon_capture_rate: float,
+    variable_opex_gbp_hr: int,
+    load_factors: dict,
+    gas_prices: dict,
+    carbon_prices: dict,
+    co2_transport_storage_cost: float,
+) -> pd.DataFrame:
     """
     Builds a cashflow profile for capital, fixed, fuel, carbon,
     variable costs and output
@@ -210,7 +210,7 @@ def build_cashflow(
     carbon_prices : series
         A Pandas Series of floats with index of year and value of
         total price in GBP per tonne of CO2.
-    co2_transport_storage_cost : float, optional
+    co2_transport_storage_cost : float
         The fee in GBP per tonne of transport and storage of any CO2 captured.
         This price is used along with `carbon_prices` to calculate a volume-
         weighted average price of CO2 in GBP per tonne.
