@@ -68,46 +68,42 @@ def fuel_costs_profile(
 
 
 def carbon_costs_profile(
-    carbon_prices,
-    load_factors,
-    ng_flow_kgh,
-    carbon_capture_rate,
-    carbon_fraction=0.72284,
-    carbon_to_co2=3.6667,
-    hours_in_year=8760,
-    co2_transport_storage_cost=19.0,
-):
-    """
-    Calculates an annual profile of carbon costs.  Defaults to natural gas.
+    carbon_prices: dict,
+    load_factors: dict,
+    ng_flow_kgh: int,
+    carbon_capture_rate: float,
+    carbon_fraction: float,
+    co2_transport_storage_cost: float,
+    carbon_to_co2: float = 3.6667,
+    hours_in_year: int = 8760,
+) -> dict:
+    """Calculates an annual profile of carbon costs.
+
     Total resulting cost is for the market cost of emissions and the fee
     paid to a CO2 transport and storage operator.
-    Parameters
-    --------------
-    carbon_prices : series
-        A Pandas Series of floats with index of year and value of
-        total price in GBP per tonne of CO2.
-    load_factors : series
-        A Pandas series of floats with index of year and value of
-        the percentage of running in the given year.
-    ng_flow_kgh : integer
-        An integer representing the NG Feed Flow Rate (kg per hour)
-    carbon_capture_rate: float
-        A float representing the carbon capture rate.
-    carbon_fraction : float, optional
-        A float representing the fraction of fuel which is carbon.  Default
-        is for Natural Gas ~ 0.72284.
-    carbon_to_co2 : float, optional
-        A float representing the conversion factor from Carbon to Carbon Dioxide.
-        The default is 3.6667.
-    hours_in_year : int, optional
-        The number of hours in a year, default 8760.
-    co2_transport_storage_cost : float, optional
-        The fee in GBP per tonne of transport and storage of any CO2 captured.
-        This price is used along with `carbon_prices` to calculate a volume-
-        weighted average price of CO2 in GBP per tonne.
-    Returns
-    -------------
-    out : dict
+
+    Args:
+        carbon_prices: Dict of floats with key of year and value of
+                       total price in GBP per tonne of CO2.
+        load_factors: Dict of floats with key of year and value of
+                      the percentage of running in the given year.
+        ng_flow_kgh : integer
+            An integer representing the NG Feed Flow Rate (kg per hour)
+        carbon_capture_rate: float
+            A float representing the carbon capture rate.
+        carbon_fraction : float, optional
+            A float representing the fraction of fuel which is carbon.
+        co2_transport_storage_cost : float, optional
+            The fee in GBP per tonne of transport and storage of any CO2 captured.
+            This price is used along with `carbon_prices` to calculate a volume-
+            weighted average price of CO2 in GBP per tonne.
+        carbon_to_co2 : float, optional
+            A float representing the conversion factor from Carbon to Carbon Dioxide.
+            The default is 3.6667.
+        hours_in_year : int, optional
+            The number of hours in a year, default 8760.
+
+    Returns:
         Dict of carbon cost per year for years where load factor is greater than zero.
     """
     return {
@@ -115,7 +111,7 @@ def carbon_costs_profile(
             ng_flow_kgh
             * carbon_fraction
             * carbon_to_co2
-            * load_factors.loc[year]["load_factor"]
+            * lf
             * hours_in_year
             * (
                 (1 - carbon_capture_rate) * carbon_prices[year]
@@ -124,7 +120,7 @@ def carbon_costs_profile(
         )
         / 1000
         / 1000000
-        for year in load_factors[load_factors["load_factor"] > 0].index
+        for year, lf in load_factors.items()
     }
 
 
