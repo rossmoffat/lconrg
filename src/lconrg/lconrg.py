@@ -162,11 +162,8 @@ def variable_costs_profile(
         A Dict of variable costs for years where load factor is greater than zero.
     """
     return {
-        year: (
-            variable_opex_gbp_hr * load_factors.loc[year]["load_factor"] * hours_in_year
-        )
-        / 1000000
-        for year in load_factors[load_factors["load_factor"] > 0].index
+        year: (variable_opex_gbp_hr * lf * hours_in_year) / 1000000
+        for year, lf in load_factors.items()
     }
 
 
