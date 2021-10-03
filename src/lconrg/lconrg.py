@@ -70,7 +70,7 @@ def fuel_costs_profile(
 def carbon_costs_profile(
     carbon_prices: dict,
     load_factors: dict,
-    ng_flow_kgh: int,
+    fuel_flow_kgh: int,
     carbon_capture_rate: float,
     carbon_fraction: float,
     co2_transport_storage_cost: float,
@@ -87,8 +87,7 @@ def carbon_costs_profile(
                        total price in GBP per tonne of CO2.
         load_factors: Dict of floats with key of year and value of
                       the percentage of running in the given year.
-        ng_flow_kgh : integer
-            An integer representing the NG Feed Flow Rate (kg per hour)
+        fuel_flow_kgh: Fuel Feed Flow Rate (kg per hour)
         carbon_capture_rate: float
             A float representing the carbon capture rate.
         carbon_fraction : float, optional
@@ -108,7 +107,7 @@ def carbon_costs_profile(
     """
     return {
         year: (
-            ng_flow_kgh
+            fuel_flow_kgh
             * carbon_fraction
             * carbon_to_co2
             * lf
@@ -124,45 +123,30 @@ def carbon_costs_profile(
     }
 
 
-def hydrogen_production_profile(
-    load_factors, product_flow_kg, hours_in_year=8760, h2_kg_to_hhv_therms=1.343
-):
-    """
-    Calculates the volume of MWh generation for each year of operation.
-    Parameters
-    ---------------
-    load_factors : series
-        A Pandas series of floats with index of year and value of
-        the percentage of running in the given year.
-    product_flow_kg : integer
-        An integer representing the Product Flow Rate in kg/h.
-    hours_in_year : int, optional
-        The number of hours in a year, default 8760.
-    h2_kg_to_hhv_mwth : float, optional
-        The conversion factor from kg of Hydrogen to HHV therms.
-        H2 HHV Calorific Value / MJ per therm
-        Default is (1 * 141.7) / 105.505
+def energy_production_profile(
+    load_factors: dict, energy_output: int, hours_in_year: int = 8760
+) -> dict:
+    """Calculates the volume of MWh energy production for each year of operation.
 
-    Returns
-    --------------
-    out : dict
+    Args:
+        load_factors: Dict of floats with key of year and value of
+                      the percentage of running in the given year.
+        energy_output: Energy Output in MWh per hour.
+        hours_in_year: The number of hours in a year, default 8760.
+
+    Returns:
         A Dict of MWth HHV production volumes of Hydrogen for years where
         load factor is greater than zero.
     """
     return {
-        year: (
-            product_flow_kg
-            * load_factors.loc[year]["load_factor"]
-            * hours_in_year
-            * h2_kg_to_hhv_therms
-        )
-        for year in load_factors[load_factors["load_factor"] > 0].index
+        year: (energy_output * lf * hours_in_year) for year, lf in load_factors.items()
     }
 
 
-def variable_costs_profile(load_factors, variable_opex_gbp_hr, hours_in_year=8760):
-    """
-    Calculates the variable cost profile for each year of operation.
+def variable_costs_profile(
+    load_factors: dict, variable_opex_gbp_hr: int, hours_in_year: int = 8760
+) -> dict:
+    """Calculates the variable cost profile for each year of operation.
     Parameters
     --------------
     load_factors : series
@@ -243,7 +227,7 @@ def build_cashflow(
     """
     return pd.DataFrame(
         [
-            hydrogen_production_profile(load_factors, product_flow_kg),
+            energy_production_profile(load_factors, product_flow_kg),
             capital_cost,
             fixed_costs_profile(load_factors, fixed_opex_mgbp_yr),
             fuel_costs_profile(gas_prices, load_factors, ng_flow_hhv),
