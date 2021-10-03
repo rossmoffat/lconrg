@@ -33,7 +33,7 @@ def fixed_costs_profile(load_factors: dict, fixed_opex_mgbp_yr: int) -> dict:
         fixed_opex_mgbp_yr: An integer representing the
                             Fixed Opex costs in mGBP per annum.
 
-    Returns
+    Returns:
         Dict of fixed opex costs in each given year where the load factor is
         greater than zero.
     """
@@ -41,41 +41,29 @@ def fixed_costs_profile(load_factors: dict, fixed_opex_mgbp_yr: int) -> dict:
 
 
 def fuel_costs_profile(
-    gas_prices, load_factors, ng_flow_hhv, therms_to_mwth=0.3412, hours_in_year=8760
-):
-    """
-    Calculates an annual profile for Natural Gas feed costs.
-    Parameters
-    ------------
-    gas_prices : series
-        A Pandas series of floats with index of year and value of
-        prices in p/therm (HHV basis).
-    load_factors : series
-        A Pandas series of floats with index of year and value of
-        percentage 'load_factors' in the given year.
-    ng_flow_hhv : integer
-       An integer representing the NG Feed Flow Rate (HHV terms MWth).
-    therms_to_mwth : float, optional
-        A float for the conversion of therms to MWth, with a default of 0.3412.
-    hours_in_year : int, optional
-        The number of hours in a year, default 8760.
+    gas_prices: dict,
+    load_factors: dict,
+    ng_flow_hhv: int,
+    hours_in_year: int = 8760,
+) -> dict:
+    """Calculates an annual profile for Natural Gas feed costs.
 
-    Returns
-    ------------
-    out : dict
-        Dict of gas cost in each given year where load factor is greater than zero.
+    Args:
+        gas_prices: A Dict of floats with key of year and value of
+                    prices in £/MWh (HHV basis).
+        load_factors: Dict of floats with key of year and value of
+                      percentage 'load_factors' in the given year.
+        ng_flow_hhv: Represents the NG Feed Flow Rate (HHV terms MWth).
+        hours_in_year: optional The number of hours in a year, default 8760.
+
+    Returns:
+         Dict of gas cost in each given year.
 
     """
 
     return {
-        year: (
-            ng_flow_hhv
-            * (gas_prices.loc[year] * therms_to_mwth)
-            * hours_in_year
-            * load_factors.loc[year]["load_factor"]
-        )
-        / 1000000
-        for year in load_factors[load_factors["load_factor"] > 0].index
+        year: ng_flow_hhv * gas_prices[year] * hours_in_year * lf / 1000000
+        for year, lf in load_factors.items()
     }
 
 

@@ -1,5 +1,5 @@
 from lconrg import __version__
-from lconrg.lconrg import fixed_costs_profile, present_value_factor
+from lconrg.lconrg import fixed_costs_profile, fuel_costs_profile, present_value_factor
 
 
 def test_version():
@@ -29,4 +29,14 @@ def test_fixed_costs():
     fc = 10000
     result = fixed_costs_profile(load_factors, fc)
     expected = {2021: 10000, 2022: 10000}
+    assert result == expected
+
+
+def test_gas_cost():
+    """Should return a dict of gas costs"""
+    load_factors = {2020: 0, 2021: 0.6, 2022: 0.5}
+    gas_prices = {2020: 25, 2021: 25, 2022: 25}
+    ng_flow_hhv = 100
+    result = fuel_costs_profile(gas_prices, load_factors, ng_flow_hhv)
+    expected = {2020: 0, 2021: 13.14, 2022: 10.95}
     assert result == expected
