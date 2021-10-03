@@ -17,32 +17,27 @@ def present_value_factor(
         Dict of Present Value discount factors from base year to end year.
     """
     return {
-        i: 1 / ((1 + discount_rate) ** (i - base_year))
-        for i in range(base_year, base_year + no_of_years)
+        year: 1 / ((1 + discount_rate) ** (year - base_year))
+        for year in range(base_year, base_year + no_of_years)
     }
 
 
-def fixed_costs_profile(load_factors, fixed_opex_mgbp_yr):
-    """
-    Calculates a fixed cost profile by applying fixed costs from the asset parameters
+def fixed_costs_profile(load_factors: dict, fixed_opex_mgbp_yr: int) -> dict:
+    """Return dict of annual fixed costs
+    Calculates a fixed cost profile by applying an annual fixed costs
     to any year where the load factor is greater than zero.
-    Parameters
-    -------------
-    load_factors : pandas_dataframe
-        A dataframe of floats with index of year and value of
-        percentage 'load_factors' in the given year.
-    fixed_opex_mgbp_yr : integer
-        An integer representing the Fixed Opex costs in mGBP per annum.
+
+    Args:
+        load_factors: Dict of floats with index of year and value of
+                      percentage 'load_factors' in the given year.
+        fixed_opex_mgbp_yr: An integer representing the
+                            Fixed Opex costs in mGBP per annum.
+
     Returns
-    -------------
-    out : dict
         Dict of fixed opex costs in each given year where the load factor is
         greater than zero.
     """
-    return {
-        year: (fixed_opex_mgbp_yr)
-        for year in load_factors[load_factors["load_factor"] > 0].index
-    }
+    return {year: (fixed_opex_mgbp_yr) for year, lf in load_factors.items() if lf > 0}
 
 
 def fuel_costs_profile(
