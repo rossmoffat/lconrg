@@ -202,10 +202,6 @@ def calculate_srmc(
     production = {
         year: production_profile[year] * pvs[year] for year in production_profile
     }
-    # srmc = {
-    #    year: cost[year] / production[year] for year, prod in cost.items() if prod > 1
-    # }
-    # return sum(srmc.values()) * 1000000
     return sum(cost.values()) / sum(production.values()) * 1000000
 
 
