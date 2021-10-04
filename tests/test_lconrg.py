@@ -1,5 +1,6 @@
 from lconrg import __version__
 from lconrg.lconrg import (
+    calculate_srmc,
     carbon_costs_profile,
     energy_production_profile,
     fixed_costs_profile,
@@ -51,11 +52,11 @@ def test_fuel_costs_profile():
 def test_carbon_costs_profile():
     """Should return a dict of carbon costs"""
     load_factors = {2020: 0, 2021: 0.6, 2022: 0.5}
-    carbon_prices = {2020: 70, 2021: 100, 2022: 100}
-    ng_flow_kgh = 150296
+    carbon_prices = {2020: 50, 2021: 50, 2022: 50}
+    ng_flow_kgh = 12371
     carbon_capture_rate = 0.95
     carbon_fraction = 0.72284
-    co2_transport_storage_cost = 100
+    co2_transport_storage_cost = 15
     result = carbon_costs_profile(
         carbon_prices,
         load_factors,
@@ -64,7 +65,7 @@ def test_carbon_costs_profile():
         carbon_fraction,
         co2_transport_storage_cost,
     )
-    expected = {2020: 0, 2021: 209.37283551751844, 2022: 174.47736293126536}
+    expected = {2020: 0, 2021: 2.886639370451373, 2022: 2.4055328087094776}
     assert result == expected
 
 
@@ -74,4 +75,36 @@ def test_energy_production_profile():
     energy_output = 100
     result = energy_production_profile(load_factors, energy_output)
     expected = {2020: 0, 2021: 525600, 2022: 438000}
+    assert result == expected
+
+
+def test_calculate_srmc():
+    """Should return int of short run marginal cost"""
+    load_factors = {2020: 0, 2021: 0.9, 2022: 0.5}
+    energy_output = 100
+    gas_prices = {2020: 25, 2021: 25, 2022: 25}
+    fuel_flow_hhv = 178
+    base_year = 2020
+    discount_rate = 0.133
+    vc = 1
+    carbon_prices = {2020: 70, 2021: 50, 2022: 50}
+    fuel_flow_kgh = 12371
+    carbon_capture_rate = 0.95
+    carbon_fraction = 0.72284
+    co2_transport_storage_cost = 15
+    result = calculate_srmc(
+        gas_prices,
+        load_factors,
+        fuel_flow_hhv,
+        carbon_prices,
+        fuel_flow_kgh,
+        carbon_capture_rate,
+        carbon_fraction,
+        co2_transport_storage_cost,
+        vc,
+        energy_output,
+        discount_rate,
+        base_year,
+    )
+    expected = 50.00208403814948
     assert result == expected

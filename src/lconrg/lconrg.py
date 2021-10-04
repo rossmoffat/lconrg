@@ -1,8 +1,8 @@
-import pandas as pd
+import numpy as pd
 
 
 def present_value_factor(
-    base_year: int, discount_rate: float, no_of_years: int
+    base_year: int, discount_rate: float, no_of_years: int = 50
 ) -> dict:
     """Return dict of discount rates.
 
@@ -43,7 +43,7 @@ def fixed_costs_profile(load_factors: dict, fixed_opex_mgbp_yr: int) -> dict:
 def fuel_costs_profile(
     gas_prices: dict,
     load_factors: dict,
-    ng_flow_hhv: int,
+    fuel_flow_hhv: int,
     hours_in_year: int = 8760,
 ) -> dict:
     """Calculates an annual profile for Natural Gas feed costs.
@@ -62,7 +62,7 @@ def fuel_costs_profile(
     """
 
     return {
-        year: ng_flow_hhv * gas_prices[year] * hours_in_year * lf / 1000000
+        year: fuel_flow_hhv * gas_prices[year] * hours_in_year * lf / 1000000
         for year, lf in load_factors.items()
     }
 
@@ -167,6 +167,48 @@ def variable_costs_profile(
     }
 
 
+def calculate_srmc(
+    gas_prices: dict,
+    load_factors: dict,
+    fuel_flow_hhv: int,
+    carbon_prices: dict,
+    fuel_flow_kgh: int,
+    carbon_capture_rate: float,
+    carbon_fraction: float,
+    co2_transport_storage_cost: float,
+    variable_opex_gbp_hr: int,
+    energy_output: int,
+    discount_rate: float,
+    base_year: int,
+) -> int:
+
+    pvs = present_value_factor(base_year, discount_rate)
+    fuel_cost = fuel_costs_profile(gas_prices, load_factors, fuel_flow_hhv)
+    carbon_cost = carbon_costs_profile(
+        carbon_prices,
+        load_factors,
+        fuel_flow_kgh,
+        carbon_capture_rate,
+        carbon_fraction,
+        co2_transport_storage_cost,
+    )
+    variable_cost = variable_costs_profile(load_factors, variable_opex_gbp_hr)
+    production_profile = energy_production_profile(load_factors, energy_output)
+    cost_profile = {
+        year: fuel_cost[year] + carbon_cost[year] + variable_cost[year]
+        for year in fuel_cost
+    }
+    cost = {year: cost_profile[year] * pvs[year] for year in cost_profile}
+    production = {
+        year: production_profile[year] * pvs[year] for year in production_profile
+    }
+    # srmc = {
+    #    year: cost[year] / production[year] for year, prod in cost.items() if prod > 1
+    # }
+    # return sum(srmc.values()) * 1000000
+    return sum(cost.values()) / sum(production.values()) * 1000000
+
+
 def build_cashflow(
     capital_cost: dict,
     product_flow_kg: int,
@@ -179,7 +221,7 @@ def build_cashflow(
     gas_prices: dict,
     carbon_prices: dict,
     co2_transport_storage_cost: float,
-) -> pd.DataFrame:
+):
     """
     Builds a cashflow profile for capital, fixed, fuel, carbon,
     variable costs and output
@@ -248,7 +290,7 @@ def build_cashflow(
     ).T.sort_index()
 
 
-def calculate_lcoh(
+def calculate_lconrg(
     capital_cost,
     product_flow_kg,
     fixed_opex_mgbp_yr,
@@ -264,6 +306,8 @@ def calculate_lcoh(
     co2_transport_storage_cost=19.0,
     **kwargs
 ):
+    # TODO: Split into two functions, one which calculates
+    #       SRMC and one which calculates lf sensitive costs
     """
     Returns the present value Levelised Cost of Electricity in GBP per MWh.
     Parameters
@@ -306,32 +350,6 @@ def calculate_lcoh(
         The Present Value Levelised Cost of Electricity in GBP per therm
 
     """
-    cf = build_cashflow(
-        capital_cost,
-        product_flow_kg,
-        fixed_opex_mgbp_yr,
-        ng_flow_hhv,
-        ng_flow_kgh,
-        carbon_capture_rate,
-        variable_opex_gbp_hr,
-        load_factors,
-        gas_prices,
-        carbon_prices,
-        co2_transport_storage_cost=19.0,
-    )
-    pvs = pd.DataFrame(
-        present_value_factor(
-            base_year, discount_rate, (cf.index.max() - base_year + 1)
-        ),
-        index=["present_value_factor"],
-    ).T
-    pvcf = cf.multiply(pvs[pvs.index.isin(cf.index)].values, axis=0)
-    pvcf = pvcf.sum(axis=0)
-    lcoh = (
-        pvcf[pvcf.index != "h2_produced_therms_HHV"].sum()
-        / pvcf[pvcf.index == "h2_produced_therms_HHV"]
-    )
-    return lcoh * 1000000
 
 
 def calculate_annual_lcoh(
