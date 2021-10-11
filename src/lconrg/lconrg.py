@@ -213,11 +213,10 @@ def calculate_srmc(
     )
     variable_cost = variable_costs_profile(load_factors, variable_opex_gbp_hr)
     production_profile = energy_production_profile(load_factors, energy_output)
-    cost_profile = {
-        year: fuel_cost[year] + carbon_cost[year] + variable_cost[year]
+    cost = {
+        year: (fuel_cost[year] + carbon_cost[year] + variable_cost[year]) * pvs[year]
         for year in fuel_cost
     }
-    cost = {year: cost_profile[year] * pvs[year] for year in cost_profile}
     production = {
         year: production_profile[year] * pvs[year] for year in production_profile
     }
