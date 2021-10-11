@@ -1,4 +1,4 @@
-import numpy as pd
+"""Levelised Cost of eNeRGy."""
 
 
 def present_value_factor(
@@ -23,7 +23,8 @@ def present_value_factor(
 
 
 def fixed_costs_profile(load_factors: dict, fixed_opex_mgbp_yr: int) -> dict:
-    """Return dict of annual fixed costs
+    """Return dict of annual fixed costs.
+
     Calculates a fixed cost profile by applying an annual fixed costs
     to any year where the load factor is greater than zero.
 
@@ -60,7 +61,6 @@ def fuel_costs_profile(
          Dict of gas cost in each given year.
 
     """
-
     return {
         year: fuel_flow_hhv * gas_prices[year] * hours_in_year * lf / 1000000
         for year, lf in load_factors.items()
@@ -147,8 +147,8 @@ def variable_costs_profile(
     load_factors: dict, variable_opex_gbp_hr: int, hours_in_year: int = 8760
 ) -> dict:
     """Calculates the variable cost profile for each year of operation.
-    Parameters
-    --------------
+
+    Args:
     load_factors : series
         A Pandas series of floats with index of year and value of
         the percentage of running in the given year.
@@ -156,9 +156,8 @@ def variable_costs_profile(
         An integer representing the Variable operating costs in GBP per hour.
     hours_in_year : int, optional
         The number of hours in a year, default 8760.
-    Returns
-    --------------
-    out : dict
+
+    Returns:
         A Dict of variable costs for years where load factor is greater than zero.
     """
     return {
@@ -180,8 +179,28 @@ def calculate_srmc(
     energy_output: int,
     discount_rate: float,
     base_year: int,
-) -> int:
+) -> float:
+    """Calculates the Short Run Marginal Cost given inputs.
 
+    This function takes the time-dependent variables and calculates an SRMC.
+
+    Args:
+        gas_prices: Profile of gas prices by year in £/MWh HHV.
+        load_factors: Dict of floats with index of year and value of
+                      percentage 'load_factors' in the given year.
+        fuel_flow_hhv:
+        carbon_capture_rate:
+        carbon_fraction:
+        co2_transport_storage_cost:
+        variable_opex_gbp_hr
+        energy_output:
+        discount_rate:
+        base_year:
+
+    Returns:
+        A float representing the Short Run Marginal Cost.
+
+    """
     pvs = present_value_factor(base_year, discount_rate)
     fuel_cost = fuel_costs_profile(gas_prices, load_factors, fuel_flow_hhv)
     carbon_cost = carbon_costs_profile(
@@ -205,321 +224,38 @@ def calculate_srmc(
     return sum(cost.values()) / sum(production.values()) * 1000000
 
 
-def build_cashflow(
+def calculate_lrmc(
     capital_cost: dict,
-    product_flow_kg: int,
-    fixed_opex_mgbp_yr: int,
-    ng_flow_hhv: int,
-    ng_flow_kgh: int,
-    carbon_capture_rate: float,
-    variable_opex_gbp_hr: int,
+    fixed_opex_mgbp_yr: dict,
+    energy_output: int,
     load_factors: dict,
-    gas_prices: dict,
-    carbon_prices: dict,
-    co2_transport_storage_cost: float,
-):
-    """
-    Builds a cashflow profile for capital, fixed, fuel, carbon,
-    variable costs and output
-    Parameters
-    --------------
-    params : dict
-        A dict containing the key data for the asset being calculated.
-    capital_cost : dict
-        A Dict containing keys of years and values of capital costs
-    product_flow_kg : integer
-        An integer representing the Product Flow Rate in kg/h.
-    fixed_opex_mgbp_yr : integer
-        An integer representing the Fixed Opex costs in mGBP per annum.
-    ng_flow_hhv : integer
-       An integer representing the NG Feed Flow Rate (HHV terms MWth).
-    ng_flow_kgh : integer
-        An integer representing the NG Feed Flow Rate (kg per hour)
-    carbon_capture_rate: float
-        A float representing the carbon capture rate.
-    variable_opex_gbp_hr : integer
-        An integer representing the Variable operating costs in GBP per hour.
-    load_factors : series
-        A Pandas series of floats with index of year and value of
-        the percentage of running in the given year.
-    gas_prices : series
-        A Pandas series of floats with index of year and value of
-        prices in p/therm (HHV basis).
-    carbon_prices : series
-        A Pandas Series of floats with index of year and value of
-        total price in GBP per tonne of CO2.
-    co2_transport_storage_cost : float
-        The fee in GBP per tonne of transport and storage of any CO2 captured.
-        This price is used along with `carbon_prices` to calculate a volume-
-        weighted average price of CO2 in GBP per tonne.
+    discount_rate: float,
+    base_year: int,
+) -> int:
+    """Calculates the Short Run Marginal Cost given inputs.
 
-    Returns
-    -------------
-    out : dataframe
-        A Pandas dataframe with index as year and values of
-        cashflow elements and output profile.
+    This function takes the time-dependent variables and calculates an SRMC.
+
+    Args:
+        capital_cost:
+        fixed_opex_mgbp_yr:
+        energy_output:
+        load_factors: Dict of floats with index of year and value of
+                      percentage 'load_factors' in the given year.
+        discount_rate:
+        base_year:
+
+    Returns:
+        A float representing the Long Run Marginal Cost (excluding SRMC).
 
     """
-    return pd.DataFrame(
-        [
-            energy_production_profile(load_factors, product_flow_kg),
-            capital_cost,
-            fixed_costs_profile(load_factors, fixed_opex_mgbp_yr),
-            fuel_costs_profile(gas_prices, load_factors, ng_flow_hhv),
-            carbon_costs_profile(
-                carbon_prices,
-                load_factors,
-                ng_flow_kgh,
-                carbon_capture_rate,
-                co2_transport_storage_cost=co2_transport_storage_cost,
-            ),
-            variable_costs_profile(load_factors, variable_opex_gbp_hr),
-        ],
-        index=[
-            "h2_produced_therms_HHV",
-            "capital_cost_mgbp",
-            "fixed_cost_mgbp",
-            "fuel_cost_mgbp",
-            "carbon_cost_mgbp",
-            "variable_cost_mgbp",
-        ],
-    ).T.sort_index()
-
-
-def calculate_lconrg(
-    capital_cost,
-    product_flow_kg,
-    fixed_opex_mgbp_yr,
-    ng_flow_hhv,
-    ng_flow_kgh,
-    carbon_capture_rate,
-    variable_opex_gbp_hr,
-    load_factors,
-    gas_prices,
-    carbon_prices,
-    base_year,
-    discount_rate,
-    co2_transport_storage_cost=19.0,
-    **kwargs
-):
-    # TODO: Split into two functions, one which calculates
-    #       SRMC and one which calculates lf sensitive costs
-    """
-    Returns the present value Levelised Cost of Electricity in GBP per MWh.
-    Parameters
-    --------------
-    capital_cost : dict
-        A Dict containing keys of years and values of capital costs
-    product_flow_kg : integer
-        An integer representing the Product Flow Rate in kg/h.
-    fixed_opex_mgbp_yr : integer
-        An integer representing the Fixed Opex costs in mGBP per annum.
-    ng_flow_hhv : integer
-       An integer representing the NG Feed Flow Rate (HHV terms MWth).
-    ng_flow_kgh : integer
-        An integer representing the NG Feed Flow Rate (kg per hour)
-    carbon_capture_rate: float
-        A float representing the carbon capture rate.
-    variable_opex_gbp_hr : integer
-        An integer representing the Variable operating costs in GBP per hour.
-    load_factors : series
-        A Pandas series of floats with index of year and value of
-        the percentage of running in the given year.
-    gas_prices : series
-        A Pandas series of floats with index of year and value of
-        prices in p/therm (HHV basis).
-    carbon_prices : series
-        A Pandas Series of floats with index of year and value of
-        total price in GBP per tonne of CO2.
-    base_year : int
-        The base year for the calculation.
-    discount_rate : float
-        The percentage discount rate.
-    co2_transport_storage_cost : float, optional
-        The fee in GBP per tonne of transport and storage of any CO2 captured.
-        This price is used along with `carbon_prices` to calculate a volume-
-        weighted average price of CO2 in GBP per tonne.
-
-    Returns
-    -------------
-    out : float
-        The Present Value Levelised Cost of Electricity in GBP per therm
-
-    """
-
-
-def calculate_annual_lcoh(
-    capital_cost,
-    product_flow_kg,
-    fixed_opex_mgbp_yr,
-    ng_flow_hhv,
-    ng_flow_kgh,
-    carbon_capture_rate,
-    variable_opex_gbp_hr,
-    load_factors,
-    gas_prices,
-    carbon_prices,
-    base_year,
-    discount_rate,
-    co2_transport_storage_cost=19.0,
-    **kwargs
-):
-    """
-    Returns the present value Levelised Cost of Electricity in GBP per MWh.
-    Parameters
-    --------------
-    capital_cost : dict
-        A Dict containing keys of years and values of capital costs
-    product_flow_kg : integer
-        An integer representing the Product Flow Rate in kg/h.
-    fixed_opex_mgbp_yr : integer
-        An integer representing the Fixed Opex costs in mGBP per annum.
-    ng_flow_hhv : integer
-       An integer representing the NG Feed Flow Rate (HHV terms MWth).
-    ng_flow_kgh : integer
-        An integer representing the NG Feed Flow Rate (kg per hour)
-    carbon_capture_rate: float
-        A float representing the carbon capture rate.
-    variable_opex_gbp_hr : integer
-        An integer representing the Variable operating costs in GBP per hour.
-    load_factors : series
-        A Pandas series of floats with index of year and value of
-        the percentage of running in the given year.
-    gas_prices : series
-        A Pandas series of floats with index of year and value of
-        prices in p/therm (HHV basis).
-    carbon_prices : series
-        A Pandas Series of floats with index of year and value of
-        total price in GBP per tonne of CO2.
-    base_year : int
-        The base year for the calculation.
-    discount_rate : float
-        The percentage discount rate.
-    co2_transport_storage_cost : float, optional
-        The fee in GBP per tonne of transport and storage of any CO2 captured.
-        This price is used along with `carbon_prices` to calculate a volume-
-        weighted average price of CO2 in GBP per tonne.
-
-    Returns
-    -------------
-    out : float
-        The Present Value Levelised Cost of Electricity in GBP per MWh
-
-    """
-    cf = build_cashflow(
-        capital_cost,
-        product_flow_kg,
-        fixed_opex_mgbp_yr,
-        ng_flow_hhv,
-        ng_flow_kgh,
-        carbon_capture_rate,
-        variable_opex_gbp_hr,
-        load_factors,
-        gas_prices,
-        carbon_prices,
-        co2_transport_storage_cost,
-    )
-    pvs = pd.DataFrame(
-        present_value_factor(
-            base_year, discount_rate, (cf.index.max() - base_year + 1)
-        ),
-        index=["present_value_factor"],
-    ).T
-    pvcf = cf.multiply(pvs[pvs.index.isin(cf.index)].values, axis=0)
-    pvcf = pvcf.sum(axis=0)
-    capital_annuity = pvcf.capital_cost_mgbp / pvcf.h2_produced_therms_HHV
-    lcoh = cf.drop("capital_cost_mgbp", axis=1)
-    lcoh["capital_cost_annuity_mgbp"] = capital_annuity * lcoh.h2_produced_therms_HHV
-    lcoh["h2_cost_p_th_hhv"] = (
-        lcoh.drop("h2_produced_therms_HHV", axis=1).sum(axis=1)
-        / lcoh.h2_produced_therms_HHV
-    ) * 100000000
-    return lcoh
-
-
-def calculate_annual_lcoh_profile(
-    capital_cost,
-    product_flow_kg,
-    fixed_opex_mgbp_yr,
-    ng_flow_hhv,
-    ng_flow_kgh,
-    carbon_capture_rate,
-    variable_opex_gbp_hr,
-    load_factors,
-    gas_prices,
-    carbon_prices,
-    base_year,
-    discount_rate,
-    operation_year,
-    co2_transport_storage_cost=19.0,
-    **kwargs
-):
-    """
-    Returns the annual present value Levelised Cost of Hydrogen in p/therm for
-    Load Factors between 5% and 100%.
-    Parameters
-    --------------
-    capital_cost : dict
-        A Dict containing keys of years and values of capital costs
-    product_flow_kg : integer
-        An integer representing the Product Flow Rate in kg/h.
-    fixed_opex_mgbp_yr : integer
-        An integer representing the Fixed Opex costs in mGBP per annum.
-    ng_flow_hhv : integer
-       An integer representing the NG Feed Flow Rate (HHV terms MWth).
-    ng_flow_kgh : integer
-        An integer representing the NG Feed Flow Rate (kg per hour)
-    carbon_capture_rate: float
-        A float representing the carbon capture rate.
-    variable_opex_gbp_hr : integer
-        An integer representing the Variable operating costs in GBP per hour.
-    load_factors : series
-        A Pandas series of floats with index of year and value of
-        the percentage of running in the given year.
-    gas_prices : series
-        A Pandas series of floats with index of year and value of
-        prices in p/therm (HHV basis).
-    carbon_prices : series
-        A Pandas Series of floats with index of year and value of
-        total price in GBP per tonne of CO2.
-    base_year : int
-        The base year for the calculation.
-    discount_rate : float
-        The percentage discount rate.
-    co2_transport_storage_cost : float, optional
-        The fee in GBP per tonne of transport and storage of any CO2 captured.
-        This price is used along with `carbon_prices` to calculate a volume-
-        weighted average price of CO2 in GBP per tonne.
-
-    Returns
-    -------------
-    out : array
-        The Annual Present Value Levelised Cost of Hydrogen in pence per therm (HHV).
-
-    """
-    lcoh_array = []
-
-    for x in range(5, 105, 5):
-        load_factors = pd.DataFrame(
-            [x / 100] * 25,
-            index=range(operation_year, operation_year + 25),
-            columns=["load_factor"],
-        )
-        lcoh = calculate_annual_lcoh(
-            capital_cost,
-            product_flow_kg,
-            fixed_opex_mgbp_yr,
-            ng_flow_hhv,
-            ng_flow_kgh,
-            carbon_capture_rate,
-            variable_opex_gbp_hr,
-            load_factors,
-            gas_prices,
-            carbon_prices,
-            base_year,
-            discount_rate,
-            co2_transport_storage_cost=19.0,
-        )
-        lcoh_array.append(lcoh.h2_cost_p_th_hhv)
-
-    return pd.DataFrame(lcoh_array, index=range(5, 105, 5)).T
+    pvs = present_value_factor(base_year, discount_rate)
+    production_profile = energy_production_profile(load_factors, energy_output)
+    cost = {
+        year: (capital_cost[year] + fixed_opex_mgbp_yr[year]) * pvs[year]
+        for year in pvs
+    }
+    production = {
+        year: production_profile[year] * pvs[year] for year in production_profile
+    }
+    return sum(cost.values()) / sum(production.values()) * 1000000

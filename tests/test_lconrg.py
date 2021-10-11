@@ -1,3 +1,4 @@
+"""Set of tests for lconrg module."""
 from lconrg import __version__
 from lconrg.lconrg import (
     calculate_srmc,
@@ -10,11 +11,12 @@ from lconrg.lconrg import (
 
 
 def test_version():
+    """Tests the version number is accurate."""
     assert __version__ == "0.1.0"
 
 
 def test_present_value():
-    """Should return a dict of input values"""
+    """Should return a dict of input values."""
     base_year = 2020
     discount_rate = 0.2
     no_of_years = 5
@@ -31,7 +33,7 @@ def test_present_value():
 
 
 def test_fixed_costs_profile():
-    """Should return a dict of fixed costs"""
+    """Should return a dict of fixed costs."""
     load_factors = {2020: 0, 2021: 0.6, 2022: 0.5}
     fc = 10000
     result = fixed_costs_profile(load_factors, fc)
@@ -40,7 +42,7 @@ def test_fixed_costs_profile():
 
 
 def test_fuel_costs_profile():
-    """Should return a dict of gas costs"""
+    """Should return a dict of gas costs."""
     load_factors = {2020: 0, 2021: 0.6, 2022: 0.5}
     gas_prices = {2020: 25, 2021: 25, 2022: 25}
     ng_flow_hhv = 100
@@ -50,7 +52,7 @@ def test_fuel_costs_profile():
 
 
 def test_carbon_costs_profile():
-    """Should return a dict of carbon costs"""
+    """Should return a dict of carbon costs."""
     load_factors = {2020: 0, 2021: 0.6, 2022: 0.5}
     carbon_prices = {2020: 50, 2021: 50, 2022: 50}
     ng_flow_kgh = 12371
@@ -70,7 +72,7 @@ def test_carbon_costs_profile():
 
 
 def test_energy_production_profile():
-    """Should return a dict of energy production by year"""
+    """Should return a dict of energy production by year."""
     load_factors = {2020: 0, 2021: 0.6, 2022: 0.5}
     energy_output = 100
     result = energy_production_profile(load_factors, energy_output)
@@ -79,8 +81,8 @@ def test_energy_production_profile():
 
 
 def test_calculate_srmc():
-    """Should return int of short run marginal cost"""
-    load_factors = {2020: 0, 2021: 0.9, 2022: 0.5}
+    """Should return int of short run marginal cost."""
+    load_factors = {2020: 0.0, 2021: 0.4, 2022: 0.5}
     energy_output = 100
     gas_prices = {2020: 25, 2021: 25, 2022: 25}
     fuel_flow_hhv = 178
