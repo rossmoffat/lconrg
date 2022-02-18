@@ -2,7 +2,7 @@
 
 
 class Fuel:
-    """_summary_."""
+    """A class to store a fuel object."""
 
     def __init__(self, fuel: str, carbon_fraction: float) -> None:
         """_summary_.
