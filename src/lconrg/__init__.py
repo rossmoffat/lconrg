@@ -1,2 +1,3 @@
 # src/lconrg/__init__.py
-__version__ = "0.1.0"
+"""Levelised Cost of Energy calculator."""
+__version__ = "0.2.0"

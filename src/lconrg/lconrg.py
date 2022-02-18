@@ -1,15 +1,17 @@
 """Levelised Cost of eNeRGy."""
+from typing import Any
 
 
 class Fuel:
     """A class to store a fuel object."""
 
-    def __init__(self, fuel: str, carbon_fraction: float) -> None:
-        """_summary_.
+    def __init__(self, fuel: str, carbon_fraction: float) -> Any:
+        """Initialises a fuel instance.
 
         Args:
-           fuel (str): _description_
-           carbon_fraction (float): _description_
+           fuel (str): Name of the fuel
+           carbon_fraction (float): The fraction of the fuel
+              which is carbon.  Used to calculate CO2 emissions.
         """
         pass
 
