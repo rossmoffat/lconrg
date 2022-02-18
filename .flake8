@@ -2,7 +2,7 @@
 select = ANN,B,B9,BLK,C,D,E,F,I,S,W
 docstring-convention = google
 max-complexity = 10
-ignore = E203,E501,W503
+ignore = E203,E501,W503,ANN101
 max-line-length = 80
 application-import-names = lconrg,tests
 import-order-style = google

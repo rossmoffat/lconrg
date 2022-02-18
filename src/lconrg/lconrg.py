@@ -1,6 +1,14 @@
 """Levelised Cost of eNeRGy."""
 
 
+class Fuel:
+    """Class to store information about fuel."""
+
+    def __init__(self, fuel: str, carbon_fraction: float) -> None:
+        """Initialises a fuel object."""
+        pass
+
+
 def present_value_factor(
     base_year: int, discount_rate: float, no_of_years: int = 50
 ) -> dict:
@@ -230,7 +238,7 @@ def calculate_lrmc(
     load_factors: dict,
     discount_rate: float,
     base_year: int,
-) -> int:
+) -> float:
     """Calculates the Short Run Marginal Cost given inputs.
 
     This function takes the time-dependent variables and calculates an SRMC.
