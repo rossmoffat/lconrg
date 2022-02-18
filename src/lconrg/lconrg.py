@@ -13,6 +13,16 @@ class Fuel:
            carbon_fraction (float): The fraction of the fuel
               which is carbon.  Used to calculate CO2 emissions.
         """
+        self.fueltype = fuel
+        self.carbon_fraction = carbon_fraction
+
+    @property
+    def prices(self) -> Any:
+        """_summary_.
+
+        Returns:
+            Any: _description_
+        """
         pass
 
 
