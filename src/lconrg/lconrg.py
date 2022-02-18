@@ -2,10 +2,15 @@
 
 
 class Fuel:
-    """Class to store information about fuel."""
+    """_summary_."""
 
     def __init__(self, fuel: str, carbon_fraction: float) -> None:
-        """Initialises a fuel object."""
+        """_summary_.
+
+        Args:
+           fuel (str): _description_
+           carbon_fraction (float): _description_
+        """
         pass
 
 
