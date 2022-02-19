@@ -1,5 +1,5 @@
 """Levelised Cost of eNeRGy."""
-from typing import Any
+from typing import Any, Optional
 
 
 class Fuel:
@@ -24,6 +24,30 @@ class Fuel:
             Any: _description_
         """
         pass
+
+
+class PriceForecast:
+    """A class to hold price forecast information."""
+
+    def __init__(
+        self,
+        commodity: str,
+        base_year: int,
+        price_forecast: Optional[dict],
+        flat_price: Optional[float],
+        yrs_duration: Optional[int],
+    ) -> None:
+        """Creates new instance of Price Forecast object.
+
+        Args:
+            commodity (str): _description_
+            base_year (int): _description_
+            price_forecast (Optional[dict]): _description_
+            flat_price (Optional[float]): _description_
+            yrs_duration (Optional[int]): _description_
+        """
+        self.commodity = commodity
+        self.base_yr = base_year
 
 
 def present_value_factor(
