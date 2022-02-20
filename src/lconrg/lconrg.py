@@ -50,13 +50,15 @@ class PriceForecast:
         """
         self.commodity = commodity
         self.base_yr = base_year
-        if (price_forecast is None) & (flat_price is None):
-            raise AttributeError(
-                "You need to provide either a flat price, or a price forecast dict."
-            )
+
         if price_forecast is not None:
             self.price_forecast = price_forecast
         else:
+            if None in [flat_price, start_yr, end_yr]:
+                raise AttributeError(
+                    "You need to provide either a flat price, "
+                    "start year and end year or a price forecast dict."
+                )
             self.price_forecast = self.build_price_forecast(
                 flat_price, start_yr, end_yr
             )
