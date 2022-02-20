@@ -1,32 +1,8 @@
 """Levelised Cost of eNeRGy."""
-from typing import Any, Optional
+from typing import Optional
 
 
-class Fuel:
-    """A class to store a fuel object."""
-
-    def __init__(self, fuel: str, carbon_fraction: float) -> Any:
-        """Initialises a fuel instance.
-
-        Args:
-           fuel (str): Name of the fuel
-           carbon_fraction (float): The fraction of the fuel
-              which is carbon.  Used to calculate CO2 emissions.
-        """
-        self.fueltype = fuel
-        self.carbon_fraction = carbon_fraction
-
-    @property
-    def prices(self) -> Any:
-        """_summary_.
-
-        Returns:
-            Any: _description_
-        """
-        pass
-
-
-class PriceForecast:
+class SimplePriceForecast:
     """A class to hold price forecast information."""
 
     def __init__(
