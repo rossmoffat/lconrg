@@ -1,4 +1,63 @@
 """Levelised Cost of eNeRGy."""
+from datetime import date
+from typing import Optional, Union
+
+
+class Plant:
+    """A class to hold the information about the plant being modelled."""
+
+    def __init__(
+        self,
+        fuel: str,
+        hhv_eff: float,
+        cod_date: date,
+        lifetime: int,
+        net_capacity_mw: float,
+        capital_cost: dict[date, int],
+        fixed_opex_mgbp: Union[float, dict[date, float]],
+        variable_opex_gbp_hr: Union[float, dict[date, float]],
+        cost_base_date: date,
+        discount_rate: float,
+        fuel_carbon_intensity: Optional[float] = None,
+        carbon_capture_rate: Optional[float] = None,
+    ) -> None:
+        """_summary_.
+
+        Args:
+            fuel (str): _description_
+            hhv_eff (float): _description_
+            cod_date (date): _description_
+            lifetime (int): _description_
+            net_capacity_mw (float): _description_
+            capital_cost (dict[date, int]): _description_
+            fixed_opex_mgbp (Union[float, dict[date, float]]): _description_
+            variable_opex_gbp_hr (Union[float, dict[date, float]]): _description_
+            cost_base_date (date): _description_
+            discount_rate (float): _description_
+            fuel_carbon_intensity (Optional[float], optional): _description_.
+            carbon_capture_rate (Optional[float], optional): _description_.
+        """
+        self.fuel = fuel
+        self.hhv_eff = hhv_eff
+        self.cod = cod_date
+        self.lifetime = lifetime
+        self.net_capacity_mw = net_capacity_mw
+        self.capital_cost = capital_cost
+        self.fixed_opex_mgbp = self.build_profile(
+            fixed_opex_mgbp, self.cod, self.lifetime
+        )
+
+    def build_profile(
+        self, num: Union[float, dict[date, float]], cod_date: date, lifetime: int
+    ) -> dict[date, float]:
+        """Checks input and builds or returns profile of prices."""
+        date_range = [*range(cod_date.year, cod_date.year + lifetime + 1)]
+        if type(num) is dict:
+            if [x.year for x in num.keys()] != date_range:
+                raise AttributeError("Input doesn't match plant lifetime!")
+            else:
+                return num
+        return {k: num for k in date_range}
 
 
 def present_value_factor(
