@@ -12,7 +12,7 @@ from lconrg.lconrg import (
 
 def test_version():
     """Tests the version number is accurate."""
-    assert __version__ == "0.1.0"
+    assert __version__ == "0.2.0"
 
 
 def test_present_value():
