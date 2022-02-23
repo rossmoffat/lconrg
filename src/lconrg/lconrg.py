@@ -1,4 +1,5 @@
 """Levelised Cost of eNeRGy."""
+from collections import Counter
 from datetime import date
 from typing import Optional, Union
 
@@ -309,10 +310,9 @@ def calculate_lrmc(
     """
     pvs = present_value_factor(base_year, discount_rate)
     production_profile = energy_production_profile(load_factors, energy_output)
-    cost = {
-        year: (capital_cost[year] + fixed_opex_mgbp_yr[year]) * pvs[year]
-        for year in set({**capital_cost, **fixed_opex_mgbp_yr})
-    }
+    capex = {year: capital_cost[year] * pvs[year] for year in capital_cost}
+    opex = {year: fixed_opex_mgbp_yr[year] * pvs[year] for year in fixed_opex_mgbp_yr}
+    cost = dict(Counter(capex) + Counter(opex))
     production = {
         year: production_profile[year] * pvs[year] for year in production_profile
     }
