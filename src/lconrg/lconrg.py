@@ -311,7 +311,7 @@ def calculate_lrmc(
     production_profile = energy_production_profile(load_factors, energy_output)
     cost = {
         year: (capital_cost[year] + fixed_opex_mgbp_yr[year]) * pvs[year]
-        for year in pvs
+        for year in set({**capital_cost, **fixed_opex_mgbp_yr})
     }
     production = {
         year: production_profile[year] * pvs[year] for year in production_profile
