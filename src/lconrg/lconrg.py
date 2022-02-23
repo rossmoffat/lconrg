@@ -317,3 +317,73 @@ def calculate_lrmc(
         year: production_profile[year] * pvs[year] for year in production_profile
     }
     return sum(cost.values()) / sum(production.values()) * 1000000
+
+
+def build_cashflows(
+    capital_cost: dict,
+    fixed_opex_mgbp_yr: dict,
+    energy_output: int,
+    load_factors: dict,
+    discount_rate: float,
+    base_year: int,
+    gas_prices: dict,
+    fuel_flow_hhv: int,
+    carbon_prices: dict,
+    fuel_flow_kgh: int,
+    carbon_capture_rate: float,
+    carbon_fraction: float,
+    co2_transport_storage_cost: float,
+    variable_opex_gbp_hr: int,
+) -> dict:
+    """_summary_.
+
+    Args:
+        capital_cost (dict): _description_
+        fixed_opex_mgbp_yr (dict): _description_
+        energy_output (int): _description_
+        load_factors (dict): _description_
+        discount_rate (float): _description_
+        base_year (int): _description_
+        gas_prices (dict): _description_
+        fuel_flow_hhv (int): _description_
+        carbon_prices (dict): _description_
+        fuel_flow_kgh (int): _description_
+        carbon_capture_rate (float): _description_
+        carbon_fraction (float): _description_
+        co2_transport_storage_cost (float): _description_
+        variable_opex_gbp_hr (int): _description_
+
+    Returns:
+        dict: _description_
+    """
+    pvs = present_value_factor(base_year, discount_rate)
+    production_profile = energy_production_profile(load_factors, energy_output)
+    fuel_cost = fuel_costs_profile(gas_prices, load_factors, fuel_flow_hhv)
+    carbon_cost = carbon_costs_profile(
+        carbon_prices,
+        load_factors,
+        fuel_flow_kgh,
+        carbon_capture_rate,
+        carbon_fraction,
+        co2_transport_storage_cost,
+    )
+    variable_cost = variable_costs_profile(load_factors, variable_opex_gbp_hr)
+    pv_capex = sum(capital_cost[year] * pvs[year] for year in capital_cost)
+    pv_production = sum(
+        production_profile[year] * pvs[year] for year in production_profile
+    )
+    capital_annuity = {
+        year: ((pv_capex / pv_production) * production_profile[year])
+        for year in production_profile
+    }
+    return dict(
+        {
+            "production_MWth": production_profile,
+            "capital_mgpb": capital_cost,
+            "fixed_opex_mgbp": fixed_opex_mgbp_yr,
+            "fuel_mgbp": fuel_cost,
+            "carbon_mgbp": carbon_cost,
+            "variable_opex_mgbp": variable_cost,
+            "capital_annuity_mgbp": capital_annuity,
+        }
+    )
