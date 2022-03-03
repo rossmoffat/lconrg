@@ -1,4 +1,6 @@
 """Set of tests for lconrg module."""
+import datetime
+
 from lconrg import __version__
 from lconrg.lconrg import (
     calculate_srmc,
@@ -12,22 +14,22 @@ from lconrg.lconrg import (
 
 def test_version():
     """Tests the version number is accurate."""
-    assert __version__ == "0.1.0"
+    assert __version__ == "0.2.0"
 
 
 def test_present_value():
     """Should return a dict of input values."""
-    base_year = 2020
+    base_date = datetime.date(2020, 1, 1)
     discount_rate = 0.2
     no_of_years = 5
 
-    pv_factors = present_value_factor(base_year, discount_rate, no_of_years)
+    pv_factors = present_value_factor(base_date, discount_rate, no_of_years)
     expected = {
-        2020: 1,
-        2021: 0.8333333333333334,
-        2022: 0.6944444444444444,
-        2023: 0.5787037037037038,
-        2024: 0.4822530864197531,
+        datetime.date(2020, 1, 1): 1,
+        datetime.date(2021, 1, 1): 0.8333333333333334,
+        datetime.date(2022, 1, 1): 0.6944444444444444,
+        datetime.date(2023, 1, 1): 0.5787037037037038,
+        datetime.date(2024, 1, 1): 0.4822530864197531,
     }
     assert pv_factors == expected
 
@@ -86,7 +88,7 @@ def test_calculate_srmc():
     energy_output = 100
     gas_prices = {2020: 25, 2021: 25, 2022: 25}
     fuel_flow_hhv = 178
-    base_year = 2020
+    base_date = datetime.date(2020, 1, 1)
     discount_rate = 0.133
     vc = 1
     carbon_prices = {2020: 70, 2021: 50, 2022: 50}
@@ -106,7 +108,7 @@ def test_calculate_srmc():
         vc,
         energy_output,
         discount_rate,
-        base_year,
+        base_date,
     )
     expected = 50.00208403814948
     assert result == expected

@@ -47,38 +47,50 @@ class Plant:
         self.fixed_opex_mgbp = self.build_profile(
             fixed_opex_mgbp, self.cod, self.lifetime
         )
+        self.variable_opex_mgbp = variable_opex_gbp_hr
+        self.cost_base = cost_base_date
+        self.discount_rate = discount_rate
+        self.fuel_carbon_intensity = fuel_carbon_intensity
+        self.carbon_capture_rate = carbon_capture_rate
 
     def build_profile(
         self, num: Union[float, dict[date, float]], cod_date: date, lifetime: int
     ) -> dict[date, float]:
         """Checks input and builds or returns profile of prices."""
-        date_range = [*range(cod_date.year, cod_date.year + lifetime + 1)]
+        date_range = [
+            cod_date.replace(year=x)
+            for x in range(cod_date.year, cod_date.year + lifetime)
+        ]
         if type(num) is dict:
             if [x.year for x in num.keys()] != date_range:
                 raise AttributeError("Input doesn't match plant lifetime!")
             else:
                 return num
-        return {k: num for k in date_range}
+
+        return {period: num for period in date_range}
 
 
 def present_value_factor(
-    base_year: int, discount_rate: float, no_of_years: int = 50
+    base_date: date,
+    discount_rate: float,
+    no_of_years: int = 50,
 ) -> dict:
-    """Return dict of discount rates.
-
-    Calculates annual discount rates and returns a dict.
+    """_summary_.
 
     Args:
-        base_year: The base year for the calculation.
-        discount_rate: The percentage discount rate.
-        no_of_years: The number of years from the base year to be calculated.
+        base_date (date): _description_
+        discount_rate (float): _description_
+        no_of_years (int, optional): _description_. Defaults to 50.
 
     Returns:
-        Dict of Present Value discount factors from base year to end year.
+        dict: _description_
     """
     return {
-        year: 1 / ((1 + discount_rate) ** (year - base_year))
-        for year in range(base_year, base_year + no_of_years)
+        period: 1 / ((1 + discount_rate) ** (period.year - base_date.year))
+        for period in [
+            base_date.replace(year=x)
+            for x in range(base_date.year, base_date.year + no_of_years)
+        ]
     }
 
 
@@ -376,14 +388,17 @@ def build_cashflows(
         year: ((pv_capex / pv_production) * production_profile[year])
         for year in production_profile
     }
-    return dict(
-        {
-            "production_MWth": production_profile,
-            "capital_mgpb": capital_cost,
-            "fixed_opex_mgbp": fixed_opex_mgbp_yr,
-            "fuel_mgbp": fuel_cost,
-            "carbon_mgbp": carbon_cost,
-            "variable_opex_mgbp": variable_cost,
-            "capital_annuity_mgbp": capital_annuity,
-        }
+    return (
+        dict(
+            {
+                "production_MWth": production_profile,
+                "capital_mgpb": capital_cost,
+                "fixed_opex_mgbp": fixed_opex_mgbp_yr,
+                "fuel_mgbp": fuel_cost,
+                "carbon_mgbp": carbon_cost,
+                "variable_opex_mgbp": variable_cost,
+                "capital_annuity_mgbp": capital_annuity,
+            }
+        ),
+        pvs,
     )
