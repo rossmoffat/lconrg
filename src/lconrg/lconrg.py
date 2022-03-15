@@ -3,6 +3,8 @@ from collections import Counter
 from datetime import date
 from typing import Optional, Union
 
+import numpy as np
+
 
 class Plant:
     """A class to hold the information about the plant being modelled."""
@@ -74,7 +76,7 @@ def present_value_factor(
     base_date: date,
     discount_rate: float,
     no_of_years: int = 50,
-) -> dict:
+) -> tuple:
     """_summary_.
 
     Args:
@@ -83,15 +85,17 @@ def present_value_factor(
         no_of_years (int, optional): _description_. Defaults to 50.
 
     Returns:
-        dict: _description_
+        tuple: _description_
     """
-    return {
-        period: 1 / ((1 + discount_rate) ** (period.year - base_date.year))
-        for period in [
-            base_date.replace(year=x)
-            for x in range(base_date.year, base_date.year + no_of_years)
-        ]
-    }
+    date_range = np.arange(
+        base_date,
+        np.datetime64(base_date, "Y") + np.timedelta64(no_of_years, "Y"),
+        dtype="datetime64[Y]",
+    )
+
+    data = 1 / ((1 + discount_rate) ** np.int32(date_range + 1970))
+
+    return (date_range, data)
 
 
 def fixed_costs_profile(load_factors: dict, fixed_opex_mgbp_yr: int) -> dict:
