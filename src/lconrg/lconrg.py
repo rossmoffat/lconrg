@@ -1,3 +1,6 @@
+# TODO: Check the speed of the dict based functions like gas price profile
+#      versus basing them on numpy.  There are no heavy calculations in the
+#      profile builders so maybe don't lose speed.
 """Levelised Cost of eNeRGy."""
 from collections import Counter
 from datetime import date
