@@ -1,7 +1,7 @@
 """Levelised Cost of eNeRGy."""
 from collections import Counter
 from datetime import date
-from typing import Optional, Union
+from typing import Optional, Tuple, Union
 
 import numpy as np
 
@@ -57,26 +57,27 @@ class Plant:
 
     def build_profile(
         self, num: Union[float, dict[date, float]], cod_date: date, lifetime: int
-    ) -> dict[date, float]:
+    ) -> Tuple:
         """Checks input and builds or returns profile of prices."""
-        date_range = [
-            cod_date.replace(year=x)
-            for x in range(cod_date.year, cod_date.year + lifetime)
-        ]
+        date_range = np.arange(
+            cod_date,
+            np.datetime64(cod_date, "Y") + np.timedelta64(lifetime, "Y"),
+            dtype="datetime64[Y]",
+        )
         if type(num) is dict:
-            if [x.year for x in num.keys()] != date_range:
+            if ([x.year for x in num.keys()] != np.int32(date_range + 1970)).all():
                 raise AttributeError("Input doesn't match plant lifetime!")
             else:
-                return num
+                return (date_range, np.fromiter(num.values(), dtype=float))
 
-        return {period: num for period in date_range}
+        return (date_range, np.full(lifetime, num))
 
 
 def present_value_factor(
     base_date: date,
     discount_rate: float,
     no_of_years: int = 50,
-) -> tuple:
+) -> Tuple:
     """_summary_.
 
     Args:
