@@ -99,25 +99,6 @@ def present_value_factor(
     return (date_range, data)
 
 
-def fixed_costs_profile(load_factors: dict, fixed_opex_mgbp_yr: int) -> dict:
-    """Return dict of annual fixed costs.
-
-    Calculates a fixed cost profile by applying an annual fixed costs
-    to any year where the load factor is greater than zero.
-
-    Args:
-        load_factors: Dict of floats with index of year and value of
-                      percentage 'load_factors' in the given year.
-        fixed_opex_mgbp_yr: An integer representing the
-                            Fixed Opex costs in mGBP per annum.
-
-    Returns:
-        Dict of fixed opex costs in each given year where the load factor is
-        greater than zero.
-    """
-    return {year: (fixed_opex_mgbp_yr) for year, lf in load_factors.items() if lf > 0}
-
-
 def fuel_costs_profile(
     gas_prices: dict,
     load_factors: dict,
