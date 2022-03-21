@@ -126,7 +126,11 @@ class Plant:
             date_range,
             np.full(
                 self.lifetime,
-                fuel_prices * hours_in_year * load_factors / self.hhv_eff,
+                fuel_prices
+                * hours_in_year
+                * load_factors
+                * self.net_capacity_mw
+                / self.hhv_eff,
             ),
         )
 
