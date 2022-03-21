@@ -75,6 +75,62 @@ class Plant:
 
         return (date_range, np.full(lifetime, num))
 
+    def check_dates(self, date_range: np.array, data: tuple) -> bool:
+        """Checks a tuple of numpy arrays for date alignment.
+
+        Args:
+            data (tuple): The tuple to be checked.  Expected to be in the format
+                ([dates], [data])
+
+        Returns:
+            bool: Boolean which is True if the dates match
+        """
+        if (data[0] != date_range).all():
+            raise AttributeError("Fuel price input doesn't match plant lifetime!")
+
+        return True
+
+    def fuel_costs_profile_numpy(
+        self,
+        fuel_prices: Union[float, dict[date, float]],
+        load_factors: Union[float, dict[date, float]],
+        fuel_flow_hhv: int,
+        cod_date: date,
+        lifetime: int,
+        hours_in_year: int = 8760,
+    ) -> dict:
+        """Calculates an annual profile for Natural Gas feed costs.
+
+        Args:
+            gas_prices: A Dict of floats with key of year and value of
+                        prices in £/MWh (HHV basis).
+            load_factors: Dict of floats with key of year and value of
+                          percentage 'load_factors' in the given year.
+            ng_flow_hhv: Represents the NG Feed Flow Rate (HHV terms MWth).
+            hours_in_year: optional The number of hours in a year, default 8760.
+
+        Returns:
+             Dict of gas cost in each given year.
+
+        """
+        date_range = np.arange(
+            cod_date,
+            np.datetime64(cod_date, "Y") + np.timedelta64(lifetime, "Y"),
+            dtype="datetime64[Y]",
+        )
+
+        for data in [fuel_prices, load_factors]:
+            if type(data) is tuple:
+                self.check_dates(date_range, data)
+
+        return (
+            date_range,
+            np.full(
+                lifetime,
+                fuel_flow_hhv * fuel_prices * hours_in_year * load_factors / 1000000,
+            ),
+        )
+
 
 def present_value_factor(
     base_date: date,
@@ -126,6 +182,12 @@ def fuel_costs_profile(
         year: fuel_flow_hhv * gas_prices[year] * hours_in_year * lf / 1000000
         for year, lf in load_factors.items()
     }
+
+
+# TODO: If using numpy, won't need to check if the prices and load factors are
+# a dict input or a float as both will multiply in the right way.  Need to set
+# the resulting array to be based on hours in the year then multiply this by
+# the gas prices, load factors and fuel flow.
 
 
 def carbon_costs_profile(
