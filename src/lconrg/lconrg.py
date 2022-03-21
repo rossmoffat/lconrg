@@ -85,7 +85,7 @@ class Plant:
         Returns:
             bool: Boolean which is True if the dates match
         """
-        if (data[0] != date_range).all():
+        if np.all(data[0] != date_range):
             raise AttributeError("Fuel price input doesn't match plant lifetime!")
 
     def fuel_costs_profile_numpy(
