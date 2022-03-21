@@ -116,10 +116,13 @@ class Plant:
             dtype="datetime64[Y]",
         )
 
-        for data in [fuel_prices, load_factors]:
-            if type(data) is tuple:
-                self.check_dates(date_range, data)
-                data = data[1]
+        if type(fuel_prices) is tuple:
+            self.check_dates(date_range, fuel_prices)
+            fuel_prices = fuel_prices[1]
+
+        if type(load_factors) is tuple:
+            self.check_dates(date_range, load_factors)
+            load_factors = load_factors[1]
 
         return (
             date_range,
