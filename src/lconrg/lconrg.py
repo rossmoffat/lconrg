@@ -111,8 +111,8 @@ class Plant:
 
         """
         date_range = np.arange(
-            self.cod_date,
-            np.datetime64(self.cod_date, "Y") + np.timedelta64(self.lifetime, "Y"),
+            self.cod,
+            np.datetime64(self.cod, "Y") + np.timedelta64(self.lifetime, "Y"),
             dtype="datetime64[Y]",
         )
 
