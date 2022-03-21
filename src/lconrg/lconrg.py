@@ -119,6 +119,7 @@ class Plant:
         for data in [fuel_prices, load_factors]:
             if type(data) is tuple:
                 self.check_dates(date_range, data)
+                data = data[1]
 
         return (
             date_range,
