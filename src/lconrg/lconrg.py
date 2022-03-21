@@ -90,8 +90,8 @@ class Plant:
 
     def fuel_costs_profile_numpy(
         self,
-        fuel_prices: Union[float, dict[date, float]],
-        load_factors: Union[float, dict[date, float]],
+        fuel_prices: Union[float, Tuple],
+        load_factors: Union[float, Tuple],
         hours_in_year: int = 8760,
     ) -> dict:
         """Calculates an annual profile for Natural Gas feed costs.
