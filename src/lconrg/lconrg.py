@@ -94,9 +94,6 @@ class Plant:
         self,
         fuel_prices: Union[float, dict[date, float]],
         load_factors: Union[float, dict[date, float]],
-        fuel_flow_hhv: int,
-        cod_date: date,
-        lifetime: int,
         hours_in_year: int = 8760,
     ) -> dict:
         """Calculates an annual profile for Natural Gas feed costs.
@@ -114,8 +111,8 @@ class Plant:
 
         """
         date_range = np.arange(
-            cod_date,
-            np.datetime64(cod_date, "Y") + np.timedelta64(lifetime, "Y"),
+            self.cod_date,
+            np.datetime64(self.cod_date, "Y") + np.timedelta64(self.lifetime, "Y"),
             dtype="datetime64[Y]",
         )
 
@@ -126,8 +123,8 @@ class Plant:
         return (
             date_range,
             np.full(
-                lifetime,
-                fuel_flow_hhv * fuel_prices * hours_in_year * load_factors / 1000000,
+                self.lifetime,
+                fuel_prices * hours_in_year * load_factors / self.hhv_eff,
             ),
         )
 
