@@ -88,8 +88,6 @@ class Plant:
         if (data[0] != date_range).all():
             raise AttributeError("Fuel price input doesn't match plant lifetime!")
 
-        return True
-
     def fuel_costs_profile_numpy(
         self,
         fuel_prices: Union[float, dict[date, float]],
