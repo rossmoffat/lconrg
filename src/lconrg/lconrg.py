@@ -187,12 +187,6 @@ def fuel_costs_profile(
     }
 
 
-# TODO: If using numpy, won't need to check if the prices and load factors are
-# a dict input or a float as both will multiply in the right way.  Need to set
-# the resulting array to be based on hours in the year then multiply this by
-# the gas prices, load factors and fuel flow.
-
-
 def carbon_costs_profile(
     carbon_prices: dict,
     load_factors: dict,
