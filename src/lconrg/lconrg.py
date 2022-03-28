@@ -254,7 +254,7 @@ class Plant:
         """
         if type(self.fixed_opex_mgbp) is tuple:
             self.check_dates(self.fixed_opex_mgbp)
-            fixed_costs = self.fixed_costs[1]
+            fixed_costs = self.fixed_opex_mgbp[1]
         else:
             fixed_costs = self.fixed_opex_mgbp
 
