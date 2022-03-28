@@ -53,6 +53,9 @@ class Plant:
             carbon_capture_rate (Optional[float], optional): The carbon capture rate as
                 a factor between 0 and 1.
         """
+        for n in [hhv_eff, carbon_capture_rate]:
+            if 0 <= n <= 1:
+                raise ValueError("hhv_eff or carbon_capture_rate are out of range!")
         self.fuel = fuel
         self.hhv_eff = hhv_eff
         self.cod = cod_date
