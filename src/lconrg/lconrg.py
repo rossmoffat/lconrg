@@ -27,21 +27,31 @@ class Plant:
         fuel_carbon_intensity: Optional[float] = None,
         carbon_capture_rate: Optional[float] = None,
     ) -> None:
-        """_summary_.
+        """Object class for energy production plant.
 
         Args:
-            fuel (str): _description_
-            hhv_eff (float): _description_
-            cod_date (date): _description_
-            lifetime (int): _description_
-            net_capacity_mw (float): _description_
-            capital_cost (dict[date, int]): _description_
-            fixed_opex_mgbp (Union[float, dict[date, float]]): _description_
-            variable_opex_gbp_hr (Union[float, dict[date, float]]): _description_
-            cost_base_date (date): _description_
-            discount_rate (float): _description_
-            fuel_carbon_intensity (Optional[float], optional): _description_.
-            carbon_capture_rate (Optional[float], optional): _description_.
+            fuel (str): The fuel used by the plant.
+            hhv_eff (float): The HHV efficiency, a factor between 0 and 1.
+            cod_date (date): The Commercial Operations Date.
+            lifetime (int): Lifetime in full years.
+            net_capacity_mw (float): Net power output of the plant in HHV MW.
+            capital_cost (dict[date, int]): A dictionary containing the capital
+                cost profile, where key is a date and value is the Capital cost
+                in mGBP.
+            fixed_opex_mgbp (Union[float, dict[date, float]]): The fixed opex
+                profile, provided as either an annual figure to be repeated
+                through the plant lifetime, or a profile of costs in a dictionary
+                where key is the date and value is the fixed cost.  Both in mGBP.
+            variable_opex_gbp_hr (Union[float, dict[date, float]]): The variable opex
+                profile, provided as either an annual figure to be repeated
+                through the plant lifetime, or a profile of costs in a dictionary
+                where key is the date and value is the fixed cost.  Both in GBP per hr.
+            cost_base_date (date): The base date for all costs.
+            discount_rate (float): The target discount rate for the investment.
+            fuel_carbon_intensity (Optional[float], optional): The carbon intensity of
+                the fuel in te/MWh.
+            carbon_capture_rate (Optional[float], optional): The carbon capture rate as
+                a factor between 0 and 1.
         """
         self.fuel = fuel
         self.hhv_eff = hhv_eff
@@ -92,6 +102,27 @@ class Plant:
         """
         if np.all(data[0] != self.date_range):
             raise AttributeError("Input doesn't match plant lifetime!")
+
+    def energy_production_profile_numpy(
+        self, load_factors: Union[float, Tuple], hours_in_year: int = 8760
+    ) -> Tuple:
+        """_summary_.
+
+        Args:
+            load_factors (Union[float, Tuple]): _description_
+            hours_in_year (int, optional): _description_. Defaults to 8760.
+
+        Returns:
+            Tuple: _description_
+        """
+        if type(load_factors) is tuple:
+            self.check_dates(load_factors)
+            load_factors = load_factors[1]
+
+        return (
+            self.date_range,
+            np.full(self.net_capacity_mw) * load_factors * hours_in_year,
+        )
 
     def fuel_costs_profile_numpy(
         self,
@@ -177,6 +208,27 @@ class Plant:
                 * (self.fuel_carbon_intensity / self.hhv_eff)
                 * self.carbon_capture_rate,
             ),
+        )
+
+    def variable_cost_profile_numpy(
+        self, load_factors: Union[float, Tuple], hours_in_year: int = 8760
+    ) -> Tuple:
+        """_summary_.
+
+        Args:
+            load_factors (Union[float, Tuple]): _description_
+            hours_in_year (int, optional): _description_. Defaults to 8760.
+
+        Returns:
+            Tuple: _description_
+        """
+        if type(load_factors) is tuple:
+            self.check_dates(load_factors)
+            load_factors = load_factors[1]
+
+        return (
+            self.date_range,
+            np.full(self.variable_opex_mgbp) * load_factors * hours_in_year,
         )
 
 
