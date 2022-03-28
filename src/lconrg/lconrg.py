@@ -125,7 +125,7 @@ class Plant:
 
         return (
             self.date_range,
-            np.full(self.net_capacity_mw) * load_factors * hours_in_year,
+            np.full(self.lifetime, self.net_capacity_mw * load_factors * hours_in_year),
         )
 
     def fuel_costs_profile_numpy(
