@@ -143,18 +143,41 @@ class Plant:
         """_summary_.
 
         Args:
-            carbon_prices (dict): _description_
-            load_factors (dict): _description_
-            fuel_flow_kgh (int): _description_
-            carbon_capture_rate (float): _description_
-            carbon_fraction (float): _description_
+            carbon_prices (Union[float, Tuple]): _description_
+            load_factors (Union[float, Tuple]): _description_
             co2_transport_storage_cost (float): _description_
-            carbon_to_co2 (float, optional): _description_. Defaults to 3.6667.
             hours_in_year (int, optional): _description_. Defaults to 8760.
 
         Returns:
             Tuple: _description_
         """
+        if type(carbon_prices) is tuple:
+            self.check_dates(self.date_range, carbon_prices)
+            carbon_prices = carbon_prices[1]
+
+        if type(load_factors) is tuple:
+            self.check_dates(self.date_range, load_factors)
+            load_factors = load_factors[1]
+
+        return (
+            self.date_range,
+            np.full(
+                self.lifetime,
+                carbon_prices
+                * hours_in_year
+                * load_factors
+                * (self.fuel_carbon_intensity / self.hhv_eff)
+                * (1 - self.carbon_capture_rate),
+            ),
+            np.full(
+                self.lifetime,
+                co2_transport_storage_cost
+                * hours_in_year
+                * load_factors
+                * (self.fuel_carbon_intensity / self.hhv_eff)
+                * self.carbon_capture_rate,
+            ),
+        )
 
 
 def present_value_factor(
