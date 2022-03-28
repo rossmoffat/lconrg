@@ -288,7 +288,7 @@ class Plant:
         )
 
         return {
-            "production_MWth": self.energy_production_profile_numpy(self, load_factors),
+            "production_MWth": self.energy_production_profile_numpy(load_factors),
             "capital_mgpb": self.capital_cost,
             "fixed_opex_mgbp": self.fixed_cost_profile_numpy(load_factors),
             "fuel_mgbp": self.fuel_costs_profile_numpy(fuel_prices, load_factors),
