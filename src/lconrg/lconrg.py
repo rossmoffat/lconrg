@@ -56,6 +56,7 @@ class Plant:
         for n in [hhv_eff, carbon_capture_rate]:
             if 0 <= n <= 1:
                 raise ValueError("hhv_eff or carbon_capture_rate are out of range!")
+
         self.fuel = fuel
         self.hhv_eff = hhv_eff
         self.cod = cod_date
