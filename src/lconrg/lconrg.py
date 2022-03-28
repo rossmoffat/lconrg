@@ -57,6 +57,11 @@ class Plant:
         self.discount_rate = discount_rate
         self.fuel_carbon_intensity = fuel_carbon_intensity
         self.carbon_capture_rate = carbon_capture_rate
+        self.date_range = np.arange(
+            self.cod,
+            np.datetime64(self.cod, "Y") + np.timedelta64(self.lifetime, "Y"),
+            dtype="datetime64[Y]",
+        )
 
     def build_profile(
         self, num: Union[float, dict[date, float]], cod_date: date, lifetime: int
@@ -93,7 +98,7 @@ class Plant:
         fuel_prices: Union[float, Tuple],
         load_factors: Union[float, Tuple],
         hours_in_year: int = 8760,
-    ) -> dict:
+    ) -> Tuple:
         """Calculates an annual profile for Natural Gas feed costs.
 
         Args:
@@ -108,22 +113,16 @@ class Plant:
              Dict of gas cost in each given year.
 
         """
-        date_range = np.arange(
-            self.cod,
-            np.datetime64(self.cod, "Y") + np.timedelta64(self.lifetime, "Y"),
-            dtype="datetime64[Y]",
-        )
-
         if type(fuel_prices) is tuple:
-            self.check_dates(date_range, fuel_prices)
+            self.check_dates(self.date_range, fuel_prices)
             fuel_prices = fuel_prices[1]
 
         if type(load_factors) is tuple:
-            self.check_dates(date_range, load_factors)
+            self.check_dates(self.date_range, load_factors)
             load_factors = load_factors[1]
 
         return (
-            date_range,
+            self.date_range,
             np.full(
                 self.lifetime,
                 fuel_prices
@@ -133,6 +132,29 @@ class Plant:
                 / self.hhv_eff,
             ),
         )
+
+    def carbon_cost_profile_numpy(
+        self,
+        carbon_prices: Union[float, Tuple],
+        load_factors: Union[float, Tuple],
+        co2_transport_storage_cost: float,
+        hours_in_year: int = 8760,
+    ) -> Tuple:
+        """_summary_.
+
+        Args:
+            carbon_prices (dict): _description_
+            load_factors (dict): _description_
+            fuel_flow_kgh (int): _description_
+            carbon_capture_rate (float): _description_
+            carbon_fraction (float): _description_
+            co2_transport_storage_cost (float): _description_
+            carbon_to_co2 (float, optional): _description_. Defaults to 3.6667.
+            hours_in_year (int, optional): _description_. Defaults to 8760.
+
+        Returns:
+            Tuple: _description_
+        """
 
 
 def present_value_factor(
