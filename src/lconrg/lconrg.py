@@ -232,8 +232,68 @@ class Plant:
 
         return (
             self.date_range,
-            np.full(self.variable_opex_mgbp) * load_factors * hours_in_year,
+            np.full(
+                self.lifetime,
+                self.variable_opex_mgbp * load_factors * hours_in_year,
+            ),
         )
+
+    def fixed_cost_profile_numpy(
+        self,
+    ) -> Tuple:
+        """_summary_.
+
+        Args:
+            load_factors (Union[float, Tuple]): _description_
+            hours_in_year (int, optional): _description_. Defaults to 8760.
+
+        Returns:
+            Tuple: _description_
+        """
+        if type(self.fixed_opex_mgbp) is tuple:
+            self.check_dates(self.fixed_opex_mgbp)
+            fixed_costs = self.fixed_costs[1]
+        else:
+            fixed_costs = self.fixed_opex_mgbp
+
+        return (
+            self.date_range,
+            np.full(self.lifetime, fixed_costs),
+        )
+
+    def build_cashflows(
+        self,
+        load_factors: Union[float, Tuple],
+        fuel_prices: Union[float, Tuple],
+        carbon_prices: Union[float, Tuple],
+        co2_transport_storage_cost: float,
+        hours_in_year: int = 8760,
+    ) -> dict:
+        """_summary_.
+
+        Args:
+            load_factors (Union[float, Tuple]): _description_
+            fuel_prices (Union[float, Tuple]): _description_
+            carbon_prices (Union[float, Tuple]): _description_
+            co2_transport_storage_cost (float): _description_
+            hours_in_year (int, optional): _description_. Defaults to 8760.
+
+        Returns:
+            dict: _description_
+        """
+        carbon_costs = self.carbon_costs_profile_numpy(
+            carbon_prices, load_factors, co2_transport_storage_cost
+        )
+
+        return {
+            "production_MWth": self.energy_production_profile_numpy(self, load_factors),
+            "capital_mgpb": self.capital_cost,
+            "fixed_opex_mgbp": self.fixed_cost_profile_numpy(load_factors),
+            "fuel_mgbp": self.fuel_costs_profile_numpy(fuel_prices, load_factors),
+            "carbon_emissions_mgbp": (carbon_costs[0], carbon_costs[1]),
+            "carbon_storage_mgbp": (carbon_costs[0], carbon_costs[2]),
+            "variable_opex_mgbp": self.variable_cost_profile_numpy(load_factors),
+        }
 
 
 def present_value_factor(
