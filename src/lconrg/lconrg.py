@@ -281,7 +281,7 @@ class Plant:
         Returns:
             dict: _description_
         """
-        carbon_costs = self.carbon_costs_profile_numpy(
+        carbon_costs = self.carbon_cost_profile_numpy(
             carbon_prices, load_factors, co2_transport_storage_cost
         )
 
