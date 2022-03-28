@@ -80,7 +80,7 @@ class Plant:
 
         return (date_range, np.full(lifetime, num))
 
-    def check_dates(self, date_range: np.array, data: tuple) -> bool:
+    def check_dates(self, data: tuple) -> bool:
         """Checks a tuple of numpy arrays for date alignment.
 
         Args:
@@ -90,7 +90,7 @@ class Plant:
         Returns:
             bool: Boolean which is True if the dates match
         """
-        if np.all(data[0] != date_range):
+        if np.all(data[0] != self.date_range):
             raise AttributeError("Input doesn't match plant lifetime!")
 
     def fuel_costs_profile_numpy(
@@ -114,11 +114,11 @@ class Plant:
 
         """
         if type(fuel_prices) is tuple:
-            self.check_dates(self.date_range, fuel_prices)
+            self.check_dates(fuel_prices)
             fuel_prices = fuel_prices[1]
 
         if type(load_factors) is tuple:
-            self.check_dates(self.date_range, load_factors)
+            self.check_dates(load_factors)
             load_factors = load_factors[1]
 
         return (
@@ -152,11 +152,11 @@ class Plant:
             Tuple: _description_
         """
         if type(carbon_prices) is tuple:
-            self.check_dates(self.date_range, carbon_prices)
+            self.check_dates(carbon_prices)
             carbon_prices = carbon_prices[1]
 
         if type(load_factors) is tuple:
-            self.check_dates(self.date_range, load_factors)
+            self.check_dates(load_factors)
             load_factors = load_factors[1]
 
         return (
