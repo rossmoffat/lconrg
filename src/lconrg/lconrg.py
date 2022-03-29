@@ -20,7 +20,7 @@ class Plant:
         lifetime: int,
         net_capacity_mw: float,
         capital_cost: dict[date, int],
-        fixed_opex_mgbp: Union[float, dict[date, float]],
+        fixed_opex_kgbp: Union[float, dict[date, float]],
         variable_opex_gbp_hr: Union[float, dict[date, float]],
         cost_base_date: date,
         discount_rate: float,
@@ -37,11 +37,11 @@ class Plant:
             net_capacity_mw (float): Net power output of the plant in HHV MW.
             capital_cost (dict[date, int]): A dictionary containing the capital
                 cost profile, where key is a date and value is the Capital cost
-                in mGBP.
-            fixed_opex_mgbp (Union[float, dict[date, float]]): The fixed opex
+                in kGBP.
+            fixed_opex_kgbp (Union[float, dict[date, float]]): The fixed opex
                 profile, provided as either an annual figure to be repeated
                 through the plant lifetime, or a profile of costs in a dictionary
-                where key is the date and value is the fixed cost.  Both in mGBP.
+                where key is the date and value is the fixed cost.  Both in KGBP.
             variable_opex_gbp_hr (Union[float, dict[date, float]]): The variable opex
                 profile, provided as either an annual figure to be repeated
                 through the plant lifetime, or a profile of costs in a dictionary
@@ -64,7 +64,7 @@ class Plant:
         self.net_capacity_mw = net_capacity_mw
         self.capital_cost = capital_cost
         self.fixed_opex_mgbp = self.build_profile(
-            fixed_opex_mgbp, self.cod, self.lifetime
+            fixed_opex_kgbp, self.cod, self.lifetime
         )
         self.variable_opex_mgbp = variable_opex_gbp_hr
         self.cost_base = cost_base_date
@@ -110,14 +110,18 @@ class Plant:
     def energy_production_profile_numpy(
         self, load_factors: Union[float, Tuple], hours_in_year: int = 8760
     ) -> Tuple:
-        """_summary_.
+        """Function to calculate the energy production per year in GWh HHV.
 
         Args:
-            load_factors (Union[float, Tuple]): _description_
-            hours_in_year (int, optional): _description_. Defaults to 8760.
+            load_factors (Union[float, Tuple]): Factor representing % of running in
+                the year.  Can be either a single figure which is applied to each
+                year or a profile in the form of a Tuple of two numpy arrays, the
+                first containing the date, the second the load factors.
+            hours_in_year (int, optional): Number of hours in a year. Defaults to 8760.
 
         Returns:
-            Tuple: _description_
+            Tuple: Two numpy arrays, first showing dates and the second showing
+                generation in GWh.
         """
         if type(load_factors) is tuple:
             self.check_dates(load_factors)
@@ -126,7 +130,8 @@ class Plant:
         return (
             self.date_range,
             np.full(
-                self.lifetime, (self.net_capacity_mw * load_factors * hours_in_year)
+                self.lifetime,
+                (self.net_capacity_mw * load_factors * hours_in_year / 1000),
             ),
         )
 
@@ -166,7 +171,8 @@ class Plant:
                 * hours_in_year
                 * load_factors
                 * self.net_capacity_mw
-                / self.hhv_eff,
+                / self.hhv_eff
+                / 1000,
             ),
         )
 
@@ -204,7 +210,8 @@ class Plant:
                 * hours_in_year
                 * load_factors
                 * (self.fuel_carbon_intensity / self.hhv_eff)
-                * (1 - self.carbon_capture_rate),
+                * (1 - self.carbon_capture_rate)
+                / 1000,
             ),
             np.full(
                 self.lifetime,
@@ -212,7 +219,8 @@ class Plant:
                 * hours_in_year
                 * load_factors
                 * (self.fuel_carbon_intensity / self.hhv_eff)
-                * self.carbon_capture_rate,
+                * self.carbon_capture_rate
+                / 1000,
             ),
         )
 
@@ -236,7 +244,7 @@ class Plant:
             self.date_range,
             np.full(
                 self.lifetime,
-                self.variable_opex_mgbp * load_factors * hours_in_year,
+                self.variable_opex_mgbp * load_factors * hours_in_year / 1000,
             ),
         )
 
@@ -288,15 +296,15 @@ class Plant:
         )
 
         return {
-            "production_MWth": self.energy_production_profile_numpy(load_factors),
-            "capital_mgpb": self.build_profile(
+            "production_GWth": self.energy_production_profile_numpy(load_factors),
+            "capital_kgpb": self.build_profile(
                 self.capital_cost, next(iter(self.capital_cost)), len(self.capital_cost)
             ),
-            "fixed_opex_mgbp": self.fixed_cost_profile_numpy(),
-            "fuel_mgbp": self.fuel_costs_profile_numpy(fuel_prices, load_factors),
-            "carbon_emissions_mgbp": (carbon_costs[0], carbon_costs[1]),
-            "carbon_storage_mgbp": (carbon_costs[0], carbon_costs[2]),
-            "variable_opex_mgbp": self.variable_cost_profile_numpy(load_factors),
+            "fixed_opex_kgbp": self.fixed_cost_profile_numpy(),
+            "fuel_kgbp": self.fuel_costs_profile_numpy(fuel_prices, load_factors),
+            "carbon_emissions_kgbp": (carbon_costs[0], carbon_costs[1]),
+            "carbon_storage_kgbp": (carbon_costs[0], carbon_costs[2]),
+            "variable_opex_kgbp": self.variable_cost_profile_numpy(load_factors),
         }
 
 
