@@ -54,7 +54,7 @@ class Plant:
                 a factor between 0 and 1.
         """
         for n in [hhv_eff, carbon_capture_rate]:
-            if not None | (0 <= n <= 1):
+            if not 0 <= n <= 1:
                 raise ValueError("hhv_eff or carbon_capture_rate are out of range!")
 
         self.fuel = fuel
