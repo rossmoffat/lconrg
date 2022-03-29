@@ -104,7 +104,7 @@ class Plant:
         if np.all(data[0] != self.date_range):
             raise AttributeError("Input doesn't match plant lifetime!")
 
-    def energy_production_profile_numpy(
+    def energy_production_profile(
         self, load_factors: Union[float, Tuple], hours_in_year: int = 8760
     ) -> Tuple:
         """Function to calculate the energy production per year in GWh HHV.
@@ -132,7 +132,7 @@ class Plant:
             ),
         )
 
-    def fuel_costs_profile_numpy(
+    def fuel_costs_profile(
         self,
         fuel_prices: Union[float, Tuple],
         load_factors: Union[float, Tuple],
@@ -173,7 +173,7 @@ class Plant:
             ),
         )
 
-    def carbon_cost_profile_numpy(
+    def carbon_cost_profile(
         self,
         carbon_prices: Union[float, Tuple],
         load_factors: Union[float, Tuple],
@@ -221,7 +221,7 @@ class Plant:
             ),
         )
 
-    def variable_cost_profile_numpy(
+    def variable_cost_profile(
         self, load_factors: Union[float, Tuple], hours_in_year: int = 8760
     ) -> Tuple:
         """_summary_.
@@ -245,7 +245,7 @@ class Plant:
             ),
         )
 
-    def fixed_cost_profile_numpy(
+    def fixed_cost_profile(
         self,
     ) -> Tuple:
         """_summary_.
@@ -288,21 +288,33 @@ class Plant:
         Returns:
             dict: _description_
         """
-        carbon_costs = self.carbon_cost_profile_numpy(
+        carbon_costs = self.carbon_cost_profile(
             carbon_prices, load_factors, co2_transport_storage_cost
         )
 
         return {
-            "production_GWth": self.energy_production_profile_numpy(load_factors),
+            "production_GWth": self.energy_production_profile(load_factors),
             "capital_kgpb": self.build_profile(
                 self.capital_cost, next(iter(self.capital_cost)), len(self.capital_cost)
             ),
-            "fixed_opex_kgbp": self.fixed_cost_profile_numpy(),
-            "fuel_kgbp": self.fuel_costs_profile_numpy(fuel_prices, load_factors),
+            "fixed_opex_kgbp": self.fixed_cost_profile(),
+            "fuel_kgbp": self.fuel_costs_profile(fuel_prices, load_factors),
             "carbon_emissions_kgbp": (carbon_costs[0], carbon_costs[1]),
             "carbon_storage_kgbp": (carbon_costs[0], carbon_costs[2]),
-            "variable_opex_kgbp": self.variable_cost_profile_numpy(load_factors),
+            "variable_opex_kgbp": self.variable_cost_profile(load_factors),
         }
+
+    # def calculate_lcoe(
+    #     self,
+    #     load_factors: Union[float, Tuple],
+    #     fuel_prices: Union[float, Tuple],
+    #     carbon_prices: Union[float, Tuple],
+    #     co2_transport_storage_cost: float,
+    #     hours_in_year: int = 8760,
+    # ) -> float:
+    #     pvs = present_value_factor(self.cost_base, self.discount_rate)
+    # TODO: Build a full pvs array and use masking to check each element for which
+    #          years to multiply.
 
 
 def present_value_factor(
@@ -333,7 +345,7 @@ def present_value_factor(
     return (date_range, data)
 
 
-def fuel_costs_profile(
+def fuel_costs(
     gas_prices: dict,
     load_factors: dict,
     fuel_flow_hhv: int,
@@ -359,7 +371,7 @@ def fuel_costs_profile(
     }
 
 
-def carbon_costs_profile(
+def carbon_costs(
     carbon_prices: dict,
     load_factors: dict,
     fuel_flow_kgh: int,
@@ -415,7 +427,7 @@ def carbon_costs_profile(
     }
 
 
-def energy_production_profile(
+def energy_production(
     load_factors: dict, energy_output: int, hours_in_year: int = 8760
 ) -> dict:
     """Calculates the volume of MWh energy production for each year of operation.
@@ -494,8 +506,8 @@ def calculate_srmc(
 
     """
     pvs = present_value_factor(base_year, discount_rate)
-    fuel_cost = fuel_costs_profile(gas_prices, load_factors, fuel_flow_hhv)
-    carbon_cost = carbon_costs_profile(
+    fuel_cost = fuel_costs(gas_prices, load_factors, fuel_flow_hhv)
+    carbon_cost = carbon_costs(
         carbon_prices,
         load_factors,
         fuel_flow_kgh,
@@ -504,7 +516,7 @@ def calculate_srmc(
         co2_transport_storage_cost,
     )
     variable_cost = variable_costs_profile(load_factors, variable_opex_gbp_hr)
-    production_profile = energy_production_profile(load_factors, energy_output)
+    production_profile = energy_production(load_factors, energy_output)
     cost = {
         year: (fuel_cost[year] + carbon_cost[year] + variable_cost[year]) * pvs[year]
         for year in fuel_cost
@@ -541,7 +553,7 @@ def calculate_lrmc(
 
     """
     pvs = present_value_factor(base_year, discount_rate)
-    production_profile = energy_production_profile(load_factors, energy_output)
+    production_profile = energy_production(load_factors, energy_output)
     capex = {year: capital_cost[year] * pvs[year] for year in capital_cost}
     opex = {year: fixed_opex_mgbp_yr[year] * pvs[year] for year in fixed_opex_mgbp_yr}
     cost = dict(Counter(capex) + Counter(opex))
@@ -589,9 +601,9 @@ def build_cashflows(
         dict: _description_
     """
     pvs = present_value_factor(base_year, discount_rate)
-    production_profile = energy_production_profile(load_factors, energy_output)
-    fuel_cost = fuel_costs_profile(gas_prices, load_factors, fuel_flow_hhv)
-    carbon_cost = carbon_costs_profile(
+    production_profile = energy_production(load_factors, energy_output)
+    fuel_cost = fuel_costs(gas_prices, load_factors, fuel_flow_hhv)
+    carbon_cost = carbon_costs(
         carbon_prices,
         load_factors,
         fuel_flow_kgh,
