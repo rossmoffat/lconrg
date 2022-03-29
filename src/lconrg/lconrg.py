@@ -63,10 +63,10 @@ class Plant:
         self.lifetime = lifetime
         self.net_capacity_mw = net_capacity_mw
         self.capital_cost = capital_cost
-        self.fixed_opex_mgbp = self.build_profile(
+        self.fixed_opex_kgbp = self.build_profile(
             fixed_opex_kgbp, self.cod, self.lifetime
         )
-        self.variable_opex_mgbp = variable_opex_gbp_hr
+        self.variable_opex_gbp_hr = variable_opex_gbp_hr
         self.cost_base = cost_base_date
         self.discount_rate = discount_rate
         self.fuel_carbon_intensity = fuel_carbon_intensity
@@ -244,7 +244,7 @@ class Plant:
             self.date_range,
             np.full(
                 self.lifetime,
-                self.variable_opex_mgbp * load_factors * hours_in_year / 1000,
+                self.variable_opex_gbp_hr * load_factors * hours_in_year / 1000,
             ),
         )
 

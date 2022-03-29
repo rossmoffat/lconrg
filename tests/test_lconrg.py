@@ -56,7 +56,7 @@ def example_Plant_data():
 def test_Plant(example_Plant_data, opex):
     """Tests the plant class constructor."""
     test_plant_object = Plant(
-        **example_Plant_data, fixed_opex_mgbp=opex, variable_opex_gbp_hr=opex
+        **example_Plant_data, fixed_opex_kgbp=opex, variable_opex_gbp_hr=opex
     )
     result = test_plant_object.net_capacity_mw
     expected = 700
