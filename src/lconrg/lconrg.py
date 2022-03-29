@@ -53,9 +53,8 @@ class Plant:
             carbon_capture_rate (Optional[float], optional): The carbon capture rate as
                 a factor between 0 and 1.
         """
-        for n in [hhv_eff, carbon_capture_rate]:
-            if not 0 <= n <= 1:
-                raise ValueError("hhv_eff or carbon_capture_rate are out of range!")
+        if not 0 <= hhv_eff <= 1:
+            raise ValueError("hhv_eff is out of range!")
 
         self.fuel = fuel
         self.hhv_eff = hhv_eff
@@ -78,12 +77,12 @@ class Plant:
         )
 
     def build_profile(
-        self, num: Union[float, dict[date, float]], cod_date: date, lifetime: int
+        self, num: Union[float, dict[date, float]], start_date: date, years: int
     ) -> Tuple:
         """Checks input and builds or returns profile of prices."""
         date_range = np.arange(
-            cod_date,
-            np.datetime64(cod_date, "Y") + np.timedelta64(lifetime, "Y"),
+            start_date,
+            np.datetime64(start_date, "Y") + np.timedelta64(years, "Y"),
             dtype="datetime64[Y]",
         )
         if type(num) is dict:
@@ -92,7 +91,7 @@ class Plant:
             else:
                 return (date_range, np.fromiter(num.values(), dtype=float))
 
-        return (date_range, np.full(lifetime, num))
+        return (date_range, np.full(years, num))
 
     def check_dates(self, data: tuple) -> bool:
         """Checks a tuple of numpy arrays for date alignment.
