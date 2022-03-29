@@ -53,6 +53,7 @@ class Plant:
             carbon_capture_rate (Optional[float], optional): The carbon capture rate as
                 a factor between 0 and 1.
         """
+        # TODO: refactor below to ensure that changing the value subsequently is caught.
         if not 0 <= hhv_eff <= 1:
             raise ValueError("hhv_eff is out of range!")
 
@@ -320,7 +321,9 @@ def present_value_factor(
         dtype="datetime64[Y]",
     )
 
-    data = 1 / ((1 + discount_rate) ** np.int32(date_range + 1970))
+    data = 1 / (
+        (1 + discount_rate) ** np.int32(date_range - np.datetime64(base_date, "Y"))
+    )
 
     return (date_range, data)
 
