@@ -1,9 +1,10 @@
 """Levelised Cost of eNeRGy."""
-from collections import Counter
+from collections import Counter, namedtuple
 from datetime import date
 from typing import Optional, Tuple, Union
 
 import numpy as np
+import pandas as pd
 
 
 class Plant:
@@ -257,11 +258,11 @@ class Plant:
         Returns:
             Tuple: _description_
         """
-        if type(self.fixed_opex_mgbp) is tuple:
-            self.check_dates(self.fixed_opex_mgbp)
-            fixed_costs = self.fixed_opex_mgbp[1]
+        if type(self.fixed_opex_kgbp) is tuple:
+            self.check_dates(self.fixed_opex_kgbp)
+            fixed_costs = self.fixed_opex_kgbp[1]
         else:
-            fixed_costs = self.fixed_opex_mgbp
+            fixed_costs = self.fixed_opex_kgbp
 
         return (
             self.date_range,
@@ -288,33 +289,84 @@ class Plant:
         Returns:
             dict: _description_
         """
+        production = ("production_GWth", self.energy_production_profile(load_factors))
+        capital = (
+            "capital_kgbp",
+            self.build_profile(
+                self.capital_cost, next(iter(self.capital_cost)), len(self.capital_cost)
+            ),
+        )
+        fixed = ("fixed_opex_kgbp", self.fixed_cost_profile())
+        var = ("variable_opex_kgbp", self.variable_cost_profile(load_factors))
+        fuel = ("fuel_kgbp", self.fuel_costs_profile(fuel_prices, load_factors))
         carbon_costs = self.carbon_cost_profile(
             carbon_prices, load_factors, co2_transport_storage_cost
         )
+        co2emit = ("carbon_emissions_kgbp", (carbon_costs[0], carbon_costs[1]))
+        co2_store = ("carbon_storage_kgbp", (carbon_costs[0], carbon_costs[2]))
 
-        return {
-            "production_GWth": self.energy_production_profile(load_factors),
-            "capital_kgpb": self.build_profile(
-                self.capital_cost, next(iter(self.capital_cost)), len(self.capital_cost)
-            ),
-            "fixed_opex_kgbp": self.fixed_cost_profile(),
-            "fuel_kgbp": self.fuel_costs_profile(fuel_prices, load_factors),
-            "carbon_emissions_kgbp": (carbon_costs[0], carbon_costs[1]),
-            "carbon_storage_kgbp": (carbon_costs[0], carbon_costs[2]),
-            "variable_opex_kgbp": self.variable_cost_profile(load_factors),
-        }
+        source = [production, capital, fixed, var, fuel, co2emit, co2_store]
 
-    # def calculate_lcoe(
-    #     self,
-    #     load_factors: Union[float, Tuple],
-    #     fuel_prices: Union[float, Tuple],
-    #     carbon_prices: Union[float, Tuple],
-    #     co2_transport_storage_cost: float,
-    #     hours_in_year: int = 8760,
-    # ) -> float:
-    #     pvs = present_value_factor(self.cost_base, self.discount_rate)
-    # TODO: Build a full pvs array and use masking to check each element for which
-    #          years to multiply.
+        return pd.DataFrame(
+            {name: (pd.Series(data[1], index=data[0])) for name, data in source},
+        )
+
+    def calculate_lcoe(
+        self,
+        load_factors: Union[float, Tuple],
+        fuel_prices: Union[float, Tuple],
+        carbon_prices: Union[float, Tuple],
+        co2_transport_storage_cost: float,
+        hours_in_year: int = 8760,
+    ) -> float:
+        """_summary_.
+
+        Args:
+            load_factors (Union[float, Tuple]): _description_
+            fuel_prices (Union[float, Tuple]): _description_
+            carbon_prices (Union[float, Tuple]): _description_
+            co2_transport_storage_cost (float): _description_
+            hours_in_year (int, optional): _description_. Defaults to 8760.
+
+        Returns:
+            float: _description_
+        """
+        pvs = present_value_factor(self.cost_base, self.discount_rate)
+        pvs = pd.DataFrame(pvs[1], index=pvs[0], columns=["discount_rate"])
+        cf = self.build_cashflows(
+            load_factors, fuel_prices, carbon_prices, co2_transport_storage_cost
+        )
+        cf.fillna(0, inplace=True)
+        pv_cf = cf.multiply(pvs[pvs.index.isin(cf.index)]["discount_rate"], axis=0)
+        srmc = pv_cf[
+            [
+                "variable_opex_kgbp",
+                "fuel_kgbp",
+                "carbon_emissions_kgbp",
+                "carbon_storage_kgbp",
+            ]
+        ]
+        lrmc = pv_cf[["capital_kgbp", "fixed_opex_kgbp"]]
+        srmc = sum(srmc.stack().values) / sum(pv_cf.production_GWth.values)
+        lrmc = sum(lrmc.stack().values) / sum(pv_cf.production_GWth.values)
+        lcoe = srmc + lrmc
+        full = cf.drop("production_GWth", axis=1).sum() / cf.production_GWth.sum()
+
+        Lcoe = namedtuple(
+            "LCONRG",
+            ["lcoe", "srmc", "lrmc"] + list(full.index),
+        )
+        return Lcoe(
+            lcoe,
+            srmc,
+            lrmc,
+            full.capital_kgbp,
+            full.fixed_opex_kgbp,
+            full.variable_opex_kgbp,
+            full.fuel_kgbp,
+            full.carbon_emissions_kgbp,
+            full.carbon_storage_kgbp,
+        )
 
 
 def present_value_factor(
