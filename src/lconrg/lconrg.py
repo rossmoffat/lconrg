@@ -139,19 +139,22 @@ class Plant:
         load_factors: Union[float, Tuple],
         hours_in_year: int = 8760,
     ) -> Tuple:
-        """Calculates an annual profile for Natural Gas feed costs.
+        """Calculates an annual fuel costs profile in kGBP.
 
         Args:
-            gas_prices: A Dict of floats with key of year and value of
-                        prices in £/MWh (HHV basis).
-            load_factors: Dict of floats with key of year and value of
-                          percentage 'load_factors' in the given year.
-            ng_flow_hhv: Represents the NG Feed Flow Rate (HHV terms MWth).
-            hours_in_year: optional The number of hours in a year, default 8760.
+            fuel_prices (Union[float, Tuple]): Factor representing cost of fuel in
+                GBP/HHV MWh.  Can be either a single figure which is applied to each
+                year or a profile in the form of a Tuple of two numpy arrays, the
+                first containing the date, the second the fuel prices.
+            load_factors (Union[float, Tuple]): Factor representing % of running in
+                the year.  Can be either a single figure which is applied to each
+                year or a profile in the form of a Tuple of two numpy arrays, the
+                first containing the date, the second the load factors.
+            hours_in_year (int, optional): _description_. Defaults to 8760.
 
         Returns:
-             Dict of gas cost in each given year.
-
+            Tuple: Two numpy arrays, first showing dates and the second showing
+                fuel costs in kGBP.
         """
         if type(fuel_prices) is tuple:
             self.check_dates(fuel_prices)
@@ -181,16 +184,24 @@ class Plant:
         co2_transport_storage_cost: float,
         hours_in_year: int = 8760,
     ) -> Tuple:
-        """_summary_.
+        """Calculates annual carbon cost profiles for emission and storage in kGBP.
 
         Args:
-            carbon_prices (Union[float, Tuple]): _description_
-            load_factors (Union[float, Tuple]): _description_
-            co2_transport_storage_cost (float): _description_
+            carbon_prices (Union[float, Tuple]): Factor representing cost to emit
+                carbon in GBP/te.  Can be either a single figure which is applied
+                to each year or a profile in the form of a Tuple of two numpy
+                arrays, the first containing the date, the second the fuel prices.
+            load_factors (Union[float, Tuple]): Factor representing % of running in
+                the year.  Can be either a single figure which is applied to each
+                year or a profile in the form of a Tuple of two numpy arrays, the
+                first containing the date, the second the load factors.
+            co2_transport_storage_cost (float): Cost to transport and store carbon in
+                GBP/te.
             hours_in_year (int, optional): _description_. Defaults to 8760.
 
         Returns:
-            Tuple: _description_
+            Tuple: Three numpy arrays, first showing dates, second showing cost of
+                emissions in kGBP, third showing cost of storage in kGBP.
         """
         if type(carbon_prices) is tuple:
             self.check_dates(carbon_prices)
