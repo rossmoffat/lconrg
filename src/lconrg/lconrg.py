@@ -209,6 +209,7 @@ class Plant:
                 * load_factors
                 * (self.fuel_carbon_intensity / self.hhv_eff)
                 * (1 - self.carbon_capture_rate)
+                * self.net_capacity_mw
                 / 1000,
             ),
             np.full(
@@ -218,6 +219,7 @@ class Plant:
                 * load_factors
                 * (self.fuel_carbon_intensity / self.hhv_eff)
                 * self.carbon_capture_rate
+                * self.net_capacity_mw
                 / 1000,
             ),
         )
