@@ -313,7 +313,7 @@ class Plant:
             {name: (pd.Series(data[1], index=data[0])) for name, data in source},
         )
 
-    def calculate_lcoe(
+    def build_pv_cashflows(
         self,
         load_factors: Union[float, Tuple],
         fuel_prices: Union[float, Tuple],
@@ -340,6 +340,31 @@ class Plant:
         )
         cf.fillna(0, inplace=True)
         pv_cf = cf.multiply(pvs[pvs.index.isin(cf.index)]["discount_rate"], axis=0)
+        return pv_cf
+
+    def calculate_lcoe(
+        self,
+        load_factors: Union[float, Tuple],
+        fuel_prices: Union[float, Tuple],
+        carbon_prices: Union[float, Tuple],
+        co2_transport_storage_cost: float,
+        hours_in_year: int = 8760,
+    ) -> float:
+        """_summary_.
+
+        Args:
+            load_factors (Union[float, Tuple]): _description_
+            fuel_prices (Union[float, Tuple]): _description_
+            carbon_prices (Union[float, Tuple]): _description_
+            co2_transport_storage_cost (float): _description_
+            hours_in_year (int, optional): _description_. Defaults to 8760.
+
+        Returns:
+            float: _description_
+        """
+        pv_cf = self.build_pv_cashflows(
+            load_factors, fuel_prices, carbon_prices, co2_transport_storage_cost
+        )
         srmc = pv_cf[
             [
                 "variable_opex_kgbp",
@@ -369,6 +394,40 @@ class Plant:
             full.carbon_emissions_kgbp,
             full.carbon_storage_kgbp,
         )
+
+    def calculate_annual_lcoe(
+        self,
+        load_factors: Union[float, Tuple],
+        fuel_prices: Union[float, Tuple],
+        carbon_prices: Union[float, Tuple],
+        co2_transport_storage_cost: float,
+        hours_in_year: int = 8760,
+    ) -> float:
+        """_summary_.
+
+        Args:
+            load_factors (Union[float, Tuple]): _description_
+            fuel_prices (Union[float, Tuple]): _description_
+            carbon_prices (Union[float, Tuple]): _description_
+            co2_transport_storage_cost (float): _description_
+            hours_in_year (int, optional): _description_. Defaults to 8760.
+
+        Returns:
+            float: _description_
+        """
+        pv_cf = self.build_pv_cashflows(
+            load_factors, fuel_prices, carbon_prices, co2_transport_storage_cost
+        )
+        pv_cf["capital_annuity_kgbp"] = (
+            sum(pv_cf.capital_kgbp) / sum(pv_cf.production_GWth)
+        ) * pv_cf.production_GWth
+        pv_cf.drop("capital_kgbp", axis=1, inplace=True)
+        pv_profile = (
+            pv_cf.drop("production_GWth", axis=1)
+            .divide(pv_cf.production_GWth, axis=0)
+            .sum(axis=1)
+        )
+        return pv_profile
 
 
 def present_value_factor(
