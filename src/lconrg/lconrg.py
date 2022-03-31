@@ -350,7 +350,7 @@ class Plant:
         srmc = sum(srmc.stack().values) / sum(pv_cf.production_GWth.values)
         lrmc = sum(lrmc.stack().values) / sum(pv_cf.production_GWth.values)
         lcoe = srmc + lrmc
-        full = cf.drop("production_GWth", axis=1).sum() / cf.production_GWth.sum()
+        full = pv_cf.drop("production_GWth", axis=1).sum() / pv_cf.production_GWth.sum()
 
         Lcoe = namedtuple(
             "LCONRG",
