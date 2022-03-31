@@ -7,9 +7,9 @@ import pytest
 from lconrg import __version__
 from lconrg.lconrg import (
     calculate_srmc,
-    carbon_costs_profile,
-    energy_production_profile,
-    fuel_costs_profile,
+    carbon_costs,
+    energy_production,
+    fuel_costs,
     Plant,
     present_value_factor,
 )
@@ -94,7 +94,7 @@ def test_fuel_costs_profile():
     load_factors = {2020: 0, 2021: 0.6, 2022: 0.5}
     gas_prices = {2020: 25, 2021: 25, 2022: 25}
     ng_flow_hhv = 100
-    result = fuel_costs_profile(gas_prices, load_factors, ng_flow_hhv)
+    result = fuel_costs(gas_prices, load_factors, ng_flow_hhv)
     expected = {2020: 0, 2021: 13.14, 2022: 10.95}
     assert result == expected
 
@@ -107,7 +107,7 @@ def test_carbon_costs_profile():
     carbon_capture_rate = 0.95
     carbon_fraction = 0.72284
     co2_transport_storage_cost = 15
-    result = carbon_costs_profile(
+    result = carbon_costs(
         carbon_prices,
         load_factors,
         ng_flow_kgh,
@@ -123,7 +123,7 @@ def test_energy_production_profile():
     """Should return a dict of energy production by year."""
     load_factors = {2020: 0, 2021: 0.6, 2022: 0.5}
     energy_output = 100
-    result = energy_production_profile(load_factors, energy_output)
+    result = energy_production(load_factors, energy_output)
     expected = {2020: 0, 2021: 525600, 2022: 438000}
     assert result == expected
 
