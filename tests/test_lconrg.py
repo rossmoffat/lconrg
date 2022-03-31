@@ -9,7 +9,6 @@ from lconrg.lconrg import (
     calculate_srmc,
     carbon_costs,
     energy_production,
-    fuel_costs,
     Plant,
     present_value_factor,
 )
@@ -30,12 +29,12 @@ def example_Plant_data():
         "lifetime": 5,
         "net_capacity_mw": 700,
         "capital_cost": {
-            datetime.date(2020, 1, 1): 100,
-            datetime.date(2021, 1, 1): 100,
+            datetime.date(2020, 1, 1): 100000,
+            datetime.date(2021, 1, 1): 100000,
         },
         "cost_base_date": datetime.date(2022, 1, 1),
         "discount_rate": 0.1,
-        "fuel_carbon_intensity": 0.000185,
+        "fuel_carbon_intensity": 0.185,
         "carbon_capture_rate": 0.95,
     }
 
@@ -89,14 +88,36 @@ def test_present_value():
     assert (pv_factors[0] == expected[0]).all() | (pv_factors[1] == expected[1]).all()
 
 
-def test_fuel_costs_profile():
-    """Should return a dict of gas costs."""
-    load_factors = {2020: 0, 2021: 0.6, 2022: 0.5}
-    gas_prices = {2020: 25, 2021: 25, 2022: 25}
-    ng_flow_hhv = 100
-    result = fuel_costs(gas_prices, load_factors, ng_flow_hhv)
-    expected = {2020: 0, 2021: 13.14, 2022: 10.95}
-    assert result == expected
+@pytest.mark.parametrize(
+    "opex",
+    [
+        40,
+        {
+            datetime.date(2022, 1, 1): 40,
+            datetime.date(2023, 1, 1): 40,
+            datetime.date(2024, 1, 1): 40,
+            datetime.date(2025, 1, 1): 40,
+            datetime.date(2026, 1, 1): 40,
+        },
+    ],
+)
+def test_fuel_costs_profile(example_Plant_data, opex):
+    """Should return a Tuple of dates and gas costs."""
+    test_plant_object = Plant(
+        **example_Plant_data, fixed_opex_kgbp=opex, variable_opex_gbp_hr=opex
+    )
+    load_factors = 0.5
+    gas_prices = 20
+    result = test_plant_object.fuel_costs_profile(gas_prices, load_factors)
+    expected = (
+        np.arange(
+            datetime.date(2022, 1, 1),
+            np.datetime64(datetime.date(2022, 1, 1), "Y") + np.timedelta64(5, "Y"),
+            dtype="datetime64[Y]",
+        ),
+        np.full(5, 111363.63636363635),
+    )
+    assert (result[0] == expected[0]).all() | (result[1] == expected[1]).all()
 
 
 def test_carbon_costs_profile():
