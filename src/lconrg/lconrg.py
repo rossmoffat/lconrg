@@ -75,6 +75,37 @@ class Plant:
             dtype="datetime64[Y]",
         )
 
+    def __str__(self) -> str:
+        """String representation for Plant class.
+
+        Returns:
+            string: Summary of Plant class
+        """
+        capex = str()
+        opex = str()
+        for key, values in self.capital_cost.items():
+            capex += f"        {key:%Y}: {values}\n"
+
+        for i, data in enumerate(self.fixed_opex_kgbp[0]):
+            opex += f"        {data}: {self.fixed_opex_kgbp[1][i]}\n"
+
+        return (
+            f"Plant(Fuel: {self.fuel}\n"
+            + f"      HHV Efficiency: {self.hhv_eff: .2%}\n"
+            + f"      COD Date: {self.cod:%d-%b-%Y}\n"
+            + f"      Expected Lifetime: {self.lifetime} years\n"
+            + f"      Net Capacity: {self.net_capacity_mw} MW\n"
+            + "      Capital Cost (£k):\n"
+            + f"{capex}"
+            + "      Fixed Operating Costs (£k):\n"
+            + f"{opex}"
+            + f"      Variable Opex (£ per hour): {self.variable_opex_gbp_hr}\n"
+            + f"      Cost Base Date: {self.cost_base: %d-%b-%Y}\n"
+            + f"      Discount Rate: {self.discount_rate: .2%}\n"
+            + f"      Fuel Carbon Intensity: {self.fuel_carbon_intensity}te/MWh\n"
+            + f"      Carbon Capture Rate: {self.carbon_capture_rate: .1%}"
+        )
+
     def build_profile(
         self, num: Union[float, dict[date, float]], start_date: date, years: int
     ) -> Tuple:
