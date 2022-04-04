@@ -83,6 +83,7 @@ class Plant:
         """
         capex = str()
         opex = str()
+
         for key, values in self.capital_cost.items():
             capex += f"        {key:%Y}: {values}\n"
 
@@ -95,7 +96,7 @@ class Plant:
             + f"      COD Date: {self.cod:%d-%b-%Y}\n"
             + f"      Expected Lifetime: {self.lifetime} years\n"
             + f"      Net Capacity: {self.net_capacity_mw} MW\n"
-            + "      Capital Cost (£k):\n"
+            + f"      Capital Cost (£k): {sum(self.capital_cost.values())}\n"
             + f"{capex}"
             + "      Fixed Operating Costs (£k):\n"
             + f"{opex}"
