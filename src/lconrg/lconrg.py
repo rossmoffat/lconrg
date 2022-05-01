@@ -14,6 +14,7 @@ class Plant:
         self,
         fuel: str,
         hhv_eff: float,
+        availability: float,
         cod_date: date,
         lifetime: int,
         net_capacity_mw: float,
@@ -30,6 +31,7 @@ class Plant:
         Args:
             fuel (str): The fuel used by the plant.
             hhv_eff (float): The HHV efficiency, a factor between 0 and 1.
+            availability (float): The annual availability, a factor between 0 and 1.
             cod_date (date): The Commercial Operations Date.
             lifetime (int): Lifetime in full years.
             net_capacity_mw (float): Net power output of the plant in HHV MW.
@@ -55,8 +57,12 @@ class Plant:
         if not 0 <= hhv_eff <= 1:
             raise ValueError("hhv_eff is out of range!")
 
+        if not 0 <= availability <= 1:
+            raise ValueError("Availability factor is out of range!")
+
         self.fuel = fuel
         self.hhv_eff = hhv_eff
+        self.availability = availability
         self.cod = cod_date
         self.lifetime = lifetime
         self.net_capacity_mw = net_capacity_mw
@@ -93,6 +99,7 @@ class Plant:
         return (
             f"Plant(Fuel: {self.fuel}\n"
             + f"      HHV Efficiency: {self.hhv_eff: .2%}\n"
+            + f"      Availability Factor: {self.availability: .2%}\n"
             + f"      COD Date: {self.cod:%d-%b-%Y}\n"
             + f"      Expected Lifetime: {self.lifetime} years\n"
             + f"      Net Capacity: {self.net_capacity_mw} MW\n"
@@ -174,7 +181,13 @@ class Plant:
             self.date_range,
             np.full(
                 self.lifetime,
-                (self.net_capacity_mw * load_factors * hours_in_year / 1000),
+                (
+                    self.net_capacity_mw
+                    * load_factors
+                    * self.availability
+                    * hours_in_year
+                    / 1000
+                ),
             ),
         )
 
@@ -216,6 +229,7 @@ class Plant:
                 fuel_prices
                 * hours_in_year
                 * load_factors
+                * self.availability
                 * self.net_capacity_mw
                 / self.hhv_eff
                 / 1000,
@@ -263,6 +277,7 @@ class Plant:
                 carbon_prices
                 * hours_in_year
                 * load_factors
+                * self.availability
                 * (self.fuel_carbon_intensity / self.hhv_eff)
                 * (1 - self.carbon_capture_rate)
                 * self.net_capacity_mw
@@ -273,6 +288,7 @@ class Plant:
                 co2_transport_storage_cost
                 * hours_in_year
                 * load_factors
+                * self.availability
                 * (self.fuel_carbon_intensity / self.hhv_eff)
                 * self.carbon_capture_rate
                 * self.net_capacity_mw
@@ -300,7 +316,11 @@ class Plant:
             self.date_range,
             np.full(
                 self.lifetime,
-                self.variable_opex_gbp_hr * load_factors * hours_in_year / 1000,
+                self.variable_opex_gbp_hr
+                * load_factors
+                * self.availability
+                * hours_in_year
+                / 1000,
             ),
         )
 
