@@ -22,6 +22,7 @@ def example_Plant_data():
     return {
         "fuel": "gas",
         "hhv_eff": 0.55,
+        "availability": 0.91,
         "cod_date": datetime.date(2022, 1, 1),
         "lifetime": 5,
         "net_capacity_mw": 700,
