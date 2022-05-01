@@ -124,7 +124,7 @@ class Plant:
 
         return (date_range, np.full(years, num))
 
-    def check_dates(self, data: tuple) -> bool:
+    def check_dates_tuple(self, data: tuple) -> bool:
         """Checks a tuple of numpy arrays for date alignment.
 
         Args:
@@ -135,6 +135,19 @@ class Plant:
             bool: Boolean which is True if the dates match
         """
         if np.all(data[0] != self.date_range):
+            raise AttributeError("Input doesn't match plant lifetime!")
+
+    def check_dates_series(self, data: pd.Series) -> bool:
+        """Checks a pandas series for date alignment.
+
+        Args:
+            data (pd.Series): The pandas series to be checked.  Expected to have
+                index of dates.
+
+        Returns:
+            bool: Boolean which is True if the dates match
+        """
+        if np.all(data.index != self.date_range):
             raise AttributeError("Input doesn't match plant lifetime!")
 
     def energy_production_profile(
@@ -154,7 +167,7 @@ class Plant:
                 generation in GWh.
         """
         if type(load_factors) is tuple:
-            self.check_dates(load_factors)
+            self.check_dates_tuple(load_factors)
             load_factors = load_factors[1]
 
         return (
@@ -189,11 +202,11 @@ class Plant:
                 fuel costs in kGBP.
         """
         if type(fuel_prices) is tuple:
-            self.check_dates(fuel_prices)
+            self.check_dates_tuple(fuel_prices)
             fuel_prices = fuel_prices[1]
 
         if type(load_factors) is tuple:
-            self.check_dates(load_factors)
+            self.check_dates_tuple(load_factors)
             load_factors = load_factors[1]
 
         return (
@@ -236,11 +249,11 @@ class Plant:
                 emissions in kGBP, third showing cost of storage in kGBP.
         """
         if type(carbon_prices) is tuple:
-            self.check_dates(carbon_prices)
+            self.check_dates_tuple(carbon_prices)
             carbon_prices = carbon_prices[1]
 
         if type(load_factors) is tuple:
-            self.check_dates(load_factors)
+            self.check_dates_tuple(load_factors)
             load_factors = load_factors[1]
 
         return (
@@ -280,7 +293,7 @@ class Plant:
             Tuple: _description_
         """
         if type(load_factors) is tuple:
-            self.check_dates(load_factors)
+            self.check_dates_tuple(load_factors)
             load_factors = load_factors[1]
 
         return (
@@ -304,7 +317,7 @@ class Plant:
             Tuple: _description_
         """
         if type(self.fixed_opex_kgbp) is tuple:
-            self.check_dates(self.fixed_opex_kgbp)
+            self.check_dates_tuple(self.fixed_opex_kgbp)
             fixed_costs = self.fixed_opex_kgbp[1]
         else:
             fixed_costs = self.fixed_opex_kgbp
