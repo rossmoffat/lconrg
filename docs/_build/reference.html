@@ -1,0 +1,415 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Reference &#8212; LCONRG  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="License" href="license.html" />
+
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+
+
+          <div class="body" role="main">
+
+  <section id="reference">
+<h1>Reference<a class="headerlink" href="#reference" title="Permalink to this heading">¶</a></h1>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#module-lconrg.lconrg" id="id1">lconrg</a></p></li>
+</ul>
+</nav>
+<section id="module-lconrg.lconrg">
+<span id="lconrg"></span><h2>lconrg<a class="headerlink" href="#module-lconrg.lconrg" title="Permalink to this heading">¶</a></h2>
+<p>Levelised Cost of eNeRGy.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="lconrg.lconrg.Plant">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lconrg.lconrg.</span></span><span class="sig-name descname"><span class="pre">Plant</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fuel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hhv_eff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">availability</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cod_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lifetime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">net_capacity_mw</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">capital_cost</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fixed_opex_kgbp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variable_opex_gbp_hr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cost_base_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">discount_rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuel_carbon_intensity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">carbon_capture_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lconrg.lconrg.Plant" title="Permalink to this definition">¶</a></dt>
+<dd><p>A class to hold the information about the plant being modelled.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="lconrg.lconrg.Plant.build_cashflows">
+<span class="sig-name descname"><span class="pre">build_cashflows</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">load_factors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuel_prices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">carbon_prices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">co2_transport_storage_cost</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hours_in_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8760</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lconrg.lconrg.Plant.build_cashflows" title="Permalink to this definition">¶</a></dt>
+<dd><p>_summary_.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>load_factors</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>Tuple</em><em>]</em>) – _description_</p></li>
+<li><p><strong>fuel_prices</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>Tuple</em><em>]</em>) – _description_</p></li>
+<li><p><strong>carbon_prices</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>Tuple</em><em>]</em>) – _description_</p></li>
+<li><p><strong>co2_transport_storage_cost</strong> (<em>float</em>) – _description_</p></li>
+<li><p><strong>hours_in_year</strong> (<em>int</em><em>, </em><em>optional</em>) – _description_. Defaults to 8760.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>_description_</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lconrg.lconrg.Plant.build_profile">
+<span class="sig-name descname"><span class="pre">build_profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">years</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lconrg.lconrg.Plant.build_profile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks input and builds or returns profile of prices.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lconrg.lconrg.Plant.build_pv_cashflows">
+<span class="sig-name descname"><span class="pre">build_pv_cashflows</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">load_factors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuel_prices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">carbon_prices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">co2_transport_storage_cost</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hours_in_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8760</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lconrg.lconrg.Plant.build_pv_cashflows" title="Permalink to this definition">¶</a></dt>
+<dd><p>_summary_.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>load_factors</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>Tuple</em><em>]</em>) – _description_</p></li>
+<li><p><strong>fuel_prices</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>Tuple</em><em>]</em>) – _description_</p></li>
+<li><p><strong>carbon_prices</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>Tuple</em><em>]</em>) – _description_</p></li>
+<li><p><strong>co2_transport_storage_cost</strong> (<em>float</em>) – _description_</p></li>
+<li><p><strong>hours_in_year</strong> (<em>int</em><em>, </em><em>optional</em>) – _description_. Defaults to 8760.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>_description_</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lconrg.lconrg.Plant.calculate_annual_lcoe">
+<span class="sig-name descname"><span class="pre">calculate_annual_lcoe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">load_factors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuel_prices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">carbon_prices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">co2_transport_storage_cost</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hours_in_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8760</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lconrg.lconrg.Plant.calculate_annual_lcoe" title="Permalink to this definition">¶</a></dt>
+<dd><p>_summary_.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>load_factors</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>Tuple</em><em>]</em>) – _description_</p></li>
+<li><p><strong>fuel_prices</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>Tuple</em><em>]</em>) – _description_</p></li>
+<li><p><strong>carbon_prices</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>Tuple</em><em>]</em>) – _description_</p></li>
+<li><p><strong>co2_transport_storage_cost</strong> (<em>float</em>) – _description_</p></li>
+<li><p><strong>hours_in_year</strong> (<em>int</em><em>, </em><em>optional</em>) – _description_. Defaults to 8760.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>_description_</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lconrg.lconrg.Plant.calculate_lcoe">
+<span class="sig-name descname"><span class="pre">calculate_lcoe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">load_factors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuel_prices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">carbon_prices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">co2_transport_storage_cost</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hours_in_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8760</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lconrg.lconrg.Plant.calculate_lcoe" title="Permalink to this definition">¶</a></dt>
+<dd><p>_summary_.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>load_factors</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>Tuple</em><em>]</em>) – _description_</p></li>
+<li><p><strong>fuel_prices</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>Tuple</em><em>]</em>) – _description_</p></li>
+<li><p><strong>carbon_prices</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>Tuple</em><em>]</em>) – _description_</p></li>
+<li><p><strong>co2_transport_storage_cost</strong> (<em>float</em>) – _description_</p></li>
+<li><p><strong>hours_in_year</strong> (<em>int</em><em>, </em><em>optional</em>) – _description_. Defaults to 8760.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>_description_</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lconrg.lconrg.Plant.carbon_cost_profile">
+<span class="sig-name descname"><span class="pre">carbon_cost_profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">carbon_prices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_factors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">co2_transport_storage_cost</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hours_in_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8760</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lconrg.lconrg.Plant.carbon_cost_profile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates annual carbon cost profiles for emission and storage in kGBP.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>carbon_prices</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>Tuple</em><em>]</em>) – Factor representing cost to emit
+carbon in GBP/te.  Can be either a single figure which is applied
+to each year or a profile in the form of a Tuple of two numpy
+arrays, the first containing the date, the second the fuel prices.</p></li>
+<li><p><strong>load_factors</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>Tuple</em><em>]</em>) – Factor representing % of running in
+the year.  Can be either a single figure which is applied to each
+year or a profile in the form of a Tuple of two numpy arrays, the
+first containing the date, the second the load factors.</p></li>
+<li><p><strong>co2_transport_storage_cost</strong> (<em>float</em>) – Cost to transport and store carbon in
+GBP/te.</p></li>
+<li><p><strong>hours_in_year</strong> (<em>int</em><em>, </em><em>optional</em>) – _description_. Defaults to 8760.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Three numpy arrays, first showing dates, second showing cost of</dt><dd><p>emissions in kGBP, third showing cost of storage in kGBP.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lconrg.lconrg.Plant.check_dates_series">
+<span class="sig-name descname"><span class="pre">check_dates_series</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lconrg.lconrg.Plant.check_dates_series" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks a pandas series for date alignment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>pd.Series</em>) – The pandas series to be checked.  Expected to have
+index of dates.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Boolean which is True if the dates match</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lconrg.lconrg.Plant.check_dates_tuple">
+<span class="sig-name descname"><span class="pre">check_dates_tuple</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lconrg.lconrg.Plant.check_dates_tuple" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks a tuple of numpy arrays for date alignment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>tuple</em>) – The tuple to be checked.  Expected to be in the format
+([dates], [data])</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Boolean which is True if the dates match</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lconrg.lconrg.Plant.energy_production_profile">
+<span class="sig-name descname"><span class="pre">energy_production_profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">load_factors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hours_in_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8760</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lconrg.lconrg.Plant.energy_production_profile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to calculate the energy production per year in GWh HHV.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>load_factors</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>Tuple</em><em>]</em>) – Factor representing % of running in
+the year.  Can be either a single figure which is applied to each
+year or a profile in the form of a Tuple of two numpy arrays, the
+first containing the date, the second the load factors.</p></li>
+<li><p><strong>hours_in_year</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of hours in a year. Defaults to 8760.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Two numpy arrays, first showing dates and the second showing</dt><dd><p>generation in GWh.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lconrg.lconrg.Plant.fixed_cost_profile">
+<span class="sig-name descname"><span class="pre">fixed_cost_profile</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#lconrg.lconrg.Plant.fixed_cost_profile" title="Permalink to this definition">¶</a></dt>
+<dd><p>_summary_.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>load_factors</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>Tuple</em><em>]</em>) – _description_</p></li>
+<li><p><strong>hours_in_year</strong> (<em>int</em><em>, </em><em>optional</em>) – _description_. Defaults to 8760.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>_description_</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lconrg.lconrg.Plant.fuel_costs_profile">
+<span class="sig-name descname"><span class="pre">fuel_costs_profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fuel_prices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_factors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hours_in_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8760</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lconrg.lconrg.Plant.fuel_costs_profile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates an annual fuel costs profile in kGBP.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fuel_prices</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>Tuple</em><em>]</em>) – Factor representing cost of fuel in
+GBP/HHV MWh.  Can be either a single figure which is applied to each
+year or a profile in the form of a Tuple of two numpy arrays, the
+first containing the date, the second the fuel prices.</p></li>
+<li><p><strong>load_factors</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>Tuple</em><em>]</em>) – Factor representing % of running in
+the year.  Can be either a single figure which is applied to each
+year or a profile in the form of a Tuple of two numpy arrays, the
+first containing the date, the second the load factors.</p></li>
+<li><p><strong>hours_in_year</strong> (<em>int</em><em>, </em><em>optional</em>) – _description_. Defaults to 8760.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Two numpy arrays, first showing dates and the second showing</dt><dd><p>fuel costs in kGBP.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lconrg.lconrg.Plant.variable_cost_profile">
+<span class="sig-name descname"><span class="pre">variable_cost_profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">load_factors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hours_in_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8760</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lconrg.lconrg.Plant.variable_cost_profile" title="Permalink to this definition">¶</a></dt>
+<dd><p>_summary_.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>load_factors</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>Tuple</em><em>]</em>) – _description_</p></li>
+<li><p><strong>hours_in_year</strong> (<em>int</em><em>, </em><em>optional</em>) – _description_. Defaults to 8760.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>_description_</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lconrg.lconrg.present_value_factor">
+<span class="sig-prename descclassname"><span class="pre">lconrg.lconrg.</span></span><span class="sig-name descname"><span class="pre">present_value_factor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">discount_rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_of_years</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lconrg.lconrg.present_value_factor" title="Permalink to this definition">¶</a></dt>
+<dd><p>_summary_.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>base_date</strong> (<em>date</em>) – _description_</p></li>
+<li><p><strong>discount_rate</strong> (<em>float</em>) – _description_</p></li>
+<li><p><strong>no_of_years</strong> (<em>int</em><em>, </em><em>optional</em>) – _description_. Defaults to 50.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>_description_</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+          </div>
+
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">LCONRG</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Reference</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="license.html" title="previous chapter">License</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, Ross Moffat.
+
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.3.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+
+      |
+      <a href="_sources/reference.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+
+
+
+  </body>
+</html>

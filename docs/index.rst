@@ -6,6 +6,7 @@ The LCONRG Project
     :maxdepth: 1
 
     license
+    reference
 
 A Project which calculates the Levelised Cost Of eNeRGy.
 

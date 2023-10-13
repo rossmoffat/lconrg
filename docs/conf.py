@@ -7,3 +7,4 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx_autodoc_typehints",
 ]
+autodoc_mock_imports = ["pandas"]
