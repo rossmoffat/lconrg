@@ -542,7 +542,7 @@ class Plant:
         co2_transport_storage_cost: float,
         hours_in_year: Optional[int] = 8760,
     ) -> pd.DataFrame:
-        """_summary_.
+        """Calculates an annual profile of Levelised Cost of Energy.
 
         Args:
             load_factors (Union[float, Tuple]): Factor representing % of running in
