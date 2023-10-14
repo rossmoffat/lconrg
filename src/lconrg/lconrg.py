@@ -52,6 +52,10 @@ class Plant:
                 the fuel in te/MWh.
             carbon_capture_rate (Optional[float], optional): The carbon capture rate as
                 a factor between 0 and 1.
+
+        Raises:
+            ValueError: Where the HHV Efficiency or Availability Factor is
+                negative or greater than 1
         """
         # TODO: refactor below to ensure that changing the value subsequently is caught.
         if not 0 <= hhv_eff <= 1:
@@ -85,7 +89,7 @@ class Plant:
         """String representation for Plant class.
 
         Returns:
-            string: Summary of Plant class
+            str: Summary of Plant class
         """
         capex = str()
         opex = str()
@@ -138,8 +142,9 @@ class Plant:
             data (tuple): The tuple to be checked.  Expected to be in the format
                 ([dates], [data])
 
-        Returns:
-            bool: Boolean which is True if the dates match
+        Raises:
+            AttributeError: The dates in the Tuple don't match the
+                expected lifetime of the Plant.
         """
         if np.all(data[0] != self.date_range):
             raise AttributeError("Input doesn't match plant lifetime!")
@@ -151,14 +156,15 @@ class Plant:
             data (pd.Series): The pandas series to be checked.  Expected to have
                 index of dates.
 
-        Returns:
-            bool: Boolean which is True if the dates match
+        Raises:
+            AttributeError: The dates in the series don't match the
+                expected liftime of the Plant.
         """
         if np.all(data.index != self.date_range):
             raise AttributeError("Input doesn't match plant lifetime!")
 
     def energy_production_profile(
-        self, load_factors: Union[float, Tuple], hours_in_year: int = 8760
+        self, load_factors: Union[float, Tuple], hours_in_year: Optional[int] = 8760
     ) -> Tuple:
         """Function to calculate the energy production per year in GWh HHV.
 
@@ -195,7 +201,7 @@ class Plant:
         self,
         fuel_prices: Union[float, Tuple],
         load_factors: Union[float, Tuple],
-        hours_in_year: int = 8760,
+        hours_in_year: Optional[int] = 8760,
     ) -> Tuple:
         """Calculates an annual fuel costs profile in kGBP.
 
@@ -241,7 +247,7 @@ class Plant:
         carbon_prices: Union[float, Tuple],
         load_factors: Union[float, Tuple],
         co2_transport_storage_cost: float,
-        hours_in_year: int = 8760,
+        hours_in_year: Optional[int] = 8760,
     ) -> Tuple:
         """Calculates annual carbon cost profiles for emission and storage in kGBP.
 
@@ -297,7 +303,7 @@ class Plant:
         )
 
     def variable_cost_profile(
-        self, load_factors: Union[float, Tuple], hours_in_year: int = 8760
+        self, load_factors: Union[float, Tuple], hours_in_year: Optional[int] = 8760
     ) -> Tuple:
         """_summary_.
 
@@ -330,8 +336,6 @@ class Plant:
         """_summary_.
 
         Args:
-            load_factors (Union[float, Tuple]): _description_
-            hours_in_year (int, optional): _description_. Defaults to 8760.
 
         Returns:
             Tuple: _description_
@@ -353,7 +357,7 @@ class Plant:
         fuel_prices: Union[float, Tuple],
         carbon_prices: Union[float, Tuple],
         co2_transport_storage_cost: float,
-        hours_in_year: int = 8760,
+        hours_in_year: Optional[int] = 8760,
     ) -> dict:
         """_summary_.
 
@@ -395,7 +399,7 @@ class Plant:
         fuel_prices: Union[float, Tuple],
         carbon_prices: Union[float, Tuple],
         co2_transport_storage_cost: float,
-        hours_in_year: int = 8760,
+        hours_in_year: Optional[int] = 8760,
     ) -> float:
         """_summary_.
 
@@ -424,7 +428,7 @@ class Plant:
         fuel_prices: Union[float, Tuple],
         carbon_prices: Union[float, Tuple],
         co2_transport_storage_cost: float,
-        hours_in_year: int = 8760,
+        hours_in_year: Optional[int] = 8760,
     ) -> float:
         """_summary_.
 
@@ -477,7 +481,7 @@ class Plant:
         fuel_prices: Union[float, Tuple],
         carbon_prices: Union[float, Tuple],
         co2_transport_storage_cost: float,
-        hours_in_year: int = 8760,
+        hours_in_year: Optional[int] = 8760,
     ) -> float:
         """_summary_.
 
@@ -509,7 +513,7 @@ class Plant:
 def present_value_factor(
     base_date: date,
     discount_rate: float,
-    no_of_years: int = 50,
+    no_of_years: Optional[int] = 50,
 ) -> Tuple:
     """_summary_.
 
@@ -519,7 +523,7 @@ def present_value_factor(
         no_of_years (int, optional): _description_. Defaults to 50.
 
     Returns:
-        tuple: _description_
+        Tuple: _description_
     """
     date_range = np.arange(
         base_date,
