@@ -125,7 +125,24 @@ class Plant:
     def build_profile(
         self, num: Union[float, dict[date, float]], start_date: date, years: int
     ) -> Tuple:
-        """Checks input and builds or returns profile of prices."""
+        """Checks input and builds or returns profile of prices.
+
+        Args:
+            num (Union[float, dict[date, float]]): The values to be
+                used for the profile. Can either be a dict with keys of
+                date and value, or can be a single float which is used
+                to build a flat profile.
+            start_date (date): The first date for the profile.
+            years (int): The number of years to include in the profile.
+
+        Returns:
+            Tuple: Date and Value pairs.
+
+        Raises:
+             AttributeError: The dates in the dict don't match the
+                expected lifetime of the Plant.
+
+        """
         date_range = np.arange(
             start_date,
             np.datetime64(start_date, "Y") + np.timedelta64(years, "Y"),
@@ -218,7 +235,7 @@ class Plant:
                 the year.  Can be either a single figure which is applied to each
                 year or a profile in the form of a Tuple of two numpy arrays, the
                 first containing the date, the second the load factors.
-            hours_in_year (int, optional): _description_. Defaults to 8760.
+            hours_in_year (int, optional): Number of hours in a year. Defaults to 8760.
 
         Returns:
             Tuple: Two numpy arrays, first showing dates and the second showing
@@ -266,7 +283,7 @@ class Plant:
                 first containing the date, the second the load factors.
             co2_transport_storage_cost (float): Cost to transport and store carbon in
                 GBP/te.
-            hours_in_year (int, optional): _description_. Defaults to 8760.
+            hours_in_year (int, optional): Number of hours in a year. Defaults to 8760.
 
         Returns:
             Tuple: Three numpy arrays, first showing dates, second showing cost of
@@ -309,11 +326,14 @@ class Plant:
     def variable_cost_profile(
         self, load_factors: Union[float, Tuple], hours_in_year: Optional[int] = 8760
     ) -> Tuple:
-        """_summary_.
+        """Calculates annual variable cost in kGBP.
 
         Args:
-            load_factors (Union[float, Tuple]): _description_
-            hours_in_year (int, optional): _description_. Defaults to 8760.
+            load_factors (Union[float, Tuple]): Factor representing % of running in
+                the year.  Can be either a single figure which is applied to each
+                year or a profile in the form of a Tuple of two numpy arrays, the
+                first containing the date, the second the load factors.
+            hours_in_year (int, optional): Number of hours in a year. Defaults to 8760.
 
         Returns:
             Tuple: _description_
@@ -362,18 +382,19 @@ class Plant:
         carbon_prices: Union[float, Tuple],
         co2_transport_storage_cost: float,
         hours_in_year: Optional[int] = 8760,
-    ) -> dict:
-        """_summary_.
+    ) -> pd.DataFrame:
+        """Builds a profile of annual cashflows for the Plant class.
 
         Args:
             load_factors (Union[float, Tuple]): _description_
             fuel_prices (Union[float, Tuple]): _description_
             carbon_prices (Union[float, Tuple]): _description_
             co2_transport_storage_cost (float): _description_
-            hours_in_year (int, optional): _description_. Defaults to 8760.
+            hours_in_year (int, optional): Number of hours in a year. Defaults to 8760.
 
         Returns:
-            dict: _description_
+            pd.DataFrame: A Pandas Dataframe indexed by year including cashflows
+                for Capital, Fixed, Varialbe, Fuel and Carbon costs.
         """
         production = ("production_GWth", self.energy_production_profile(load_factors))
         capital = (
@@ -412,7 +433,7 @@ class Plant:
             fuel_prices (Union[float, Tuple]): _description_
             carbon_prices (Union[float, Tuple]): _description_
             co2_transport_storage_cost (float): _description_
-            hours_in_year (int, optional): _description_. Defaults to 8760.
+            hours_in_year (int, optional): Number of hours in a year. Defaults to 8760.
 
         Returns:
             float: _description_
@@ -441,7 +462,7 @@ class Plant:
             fuel_prices (Union[float, Tuple]): _description_
             carbon_prices (Union[float, Tuple]): _description_
             co2_transport_storage_cost (float): _description_
-            hours_in_year (int, optional): _description_. Defaults to 8760.
+            hours_in_year (int, optional): Number of hours in a year. Defaults to 8760.
 
         Returns:
             float: _description_
@@ -497,7 +518,7 @@ class Plant:
             hours_in_year (int, optional): _description_. Defaults to 8760.
 
         Returns:
-            float: _description_
+            float: The
         """
         pv_cf = self.build_pv_cashflows(
             load_factors, fuel_prices, carbon_prices, co2_transport_storage_cost
@@ -519,15 +540,16 @@ def present_value_factor(
     discount_rate: float,
     no_of_years: Optional[int] = 50,
 ) -> Tuple:
-    """_summary_.
+    """Creates an annual discount factor profile.
 
     Args:
-        base_date (date): _description_
-        discount_rate (float): _description_
-        no_of_years (int, optional): _description_. Defaults to 50.
+        base_date (date): The base date for the calculation of Present Value factors.
+        discount_rate (float): The annual discount rate to use.
+        no_of_years (int, optional): The number of years to be included. Defaults to 50.
 
     Returns:
-        Tuple: _description_
+        Tuple: A pair of numpy arrays, the first representing the date and the second
+            the corresponding discount factor.
     """
     date_range = np.arange(
         base_date,
