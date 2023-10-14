@@ -1,7 +1,7 @@
 """Levelised Cost of eNeRGy."""
 from collections import namedtuple
 from datetime import date
-from typing import Optional, Tuple, Union
+from typing import NamedTuple, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -276,7 +276,7 @@ class Plant:
             carbon_prices (Union[float, Tuple]): Factor representing cost to emit
                 carbon in GBP/te.  Can be either a single figure which is applied
                 to each year or a profile in the form of a Tuple of two numpy
-                arrays, the first containing the date, the second the fuel prices.
+                arrays, the first containing the date, the second the carbon prices.
             load_factors (Union[float, Tuple]): Factor representing % of running in
                 the year.  Can be either a single figure which is applied to each
                 year or a profile in the form of a Tuple of two numpy arrays, the
@@ -336,7 +336,8 @@ class Plant:
             hours_in_year (int, optional): Number of hours in a year. Defaults to 8760.
 
         Returns:
-            Tuple: _description_
+            Tuple: Two numpy arrays, first showing dates and the second showing
+                variable costs in kGBP.
         """
         if type(load_factors) is tuple:
             self.check_dates_tuple(load_factors)
@@ -362,7 +363,8 @@ class Plant:
         Args:
 
         Returns:
-            Tuple: _description_
+            Tuple: Two numpy arrays, first showing dates and the second showing
+                fixed costs in kGBP.
         """
         if type(self.fixed_opex_kgbp) is tuple:
             self.check_dates_tuple(self.fixed_opex_kgbp)
@@ -386,15 +388,25 @@ class Plant:
         """Builds a profile of annual cashflows for the Plant class.
 
         Args:
-            load_factors (Union[float, Tuple]): _description_
-            fuel_prices (Union[float, Tuple]): _description_
-            carbon_prices (Union[float, Tuple]): _description_
-            co2_transport_storage_cost (float): _description_
+            load_factors (Union[float, Tuple]): Factor representing % of running in
+                the year.  Can be either a single figure which is applied to each
+                year or a profile in the form of a Tuple of two numpy arrays, the
+                first containing the date, the second the load factors.
+            fuel_prices (Union[float, Tuple]): Factor representing cost of fuel in
+                GBP/HHV MWh.  Can be either a single figure which is applied to each
+                year or a profile in the form of a Tuple of two numpy arrays, the
+                first containing the date, the second the fuel prices.
+            carbon_prices (Union[float, Tuple]): Factor representing cost to emit
+                carbon in GBP/te.  Can be either a single figure which is applied
+                to each year or a profile in the form of a Tuple of two numpy
+                arrays, the first containing the date, the second the carbon prices.
+            co2_transport_storage_cost (float): Cost to transport and store carbon in
+                GBP/te.
             hours_in_year (int, optional): Number of hours in a year. Defaults to 8760.
 
         Returns:
             pd.DataFrame: A Pandas Dataframe indexed by year including cashflows
-                for Capital, Fixed, Varialbe, Fuel and Carbon costs.
+                for Capital, Fixed, Variable, Fuel and Carbon costs.
         """
         production = ("production_GWth", self.energy_production_profile(load_factors))
         capital = (
@@ -425,18 +437,29 @@ class Plant:
         carbon_prices: Union[float, Tuple],
         co2_transport_storage_cost: float,
         hours_in_year: Optional[int] = 8760,
-    ) -> float:
-        """_summary_.
+    ) -> pd.DataFrame:
+        """Builds a profile of cashflows for the Plant class in Present Value terms.
 
         Args:
-            load_factors (Union[float, Tuple]): _description_
-            fuel_prices (Union[float, Tuple]): _description_
-            carbon_prices (Union[float, Tuple]): _description_
-            co2_transport_storage_cost (float): _description_
+            load_factors (Union[float, Tuple]): Factor representing % of running in
+                the year.  Can be either a single figure which is applied to each
+                year or a profile in the form of a Tuple of two numpy arrays, the
+                first containing the date, the second the load factors.
+            fuel_prices (Union[float, Tuple]): Factor representing cost of fuel in
+                GBP/HHV MWh.  Can be either a single figure which is applied to each
+                year or a profile in the form of a Tuple of two numpy arrays, the
+                first containing the date, the second the fuel prices.
+            carbon_prices (Union[float, Tuple]): Factor representing cost to emit
+                carbon in GBP/te.  Can be either a single figure which is applied
+                to each year or a profile in the form of a Tuple of two numpy
+                arrays, the first containing the date, the second the carbon prices.
+            co2_transport_storage_cost (float): Cost to transport and store carbon in
+                GBP/te.
             hours_in_year (int, optional): Number of hours in a year. Defaults to 8760.
 
         Returns:
-            float: _description_
+            pd.DataFrame: A Pandas Dataframe indexed by year including cashflows
+                for Capital, Fixed, Variable, Fuel and Carbon costs.
         """
         pvs = present_value_factor(self.cost_base, self.discount_rate)
         pvs = pd.DataFrame(pvs[1], index=pvs[0], columns=["discount_rate"])
@@ -454,18 +477,29 @@ class Plant:
         carbon_prices: Union[float, Tuple],
         co2_transport_storage_cost: float,
         hours_in_year: Optional[int] = 8760,
-    ) -> float:
-        """_summary_.
+    ) -> NamedTuple:
+        """Calculates the Levelised Cost of Energy and returns as a Named Tuple.
 
         Args:
-            load_factors (Union[float, Tuple]): _description_
-            fuel_prices (Union[float, Tuple]): _description_
-            carbon_prices (Union[float, Tuple]): _description_
-            co2_transport_storage_cost (float): _description_
+            load_factors (Union[float, Tuple]): Factor representing % of running in
+                the year.  Can be either a single figure which is applied to each
+                year or a profile in the form of a Tuple of two numpy arrays, the
+                first containing the date, the second the load factors.
+            fuel_prices (Union[float, Tuple]): Factor representing cost of fuel in
+                GBP/HHV MWh.  Can be either a single figure which is applied to each
+                year or a profile in the form of a Tuple of two numpy arrays, the
+                first containing the date, the second the fuel prices.
+            carbon_prices (Union[float, Tuple]): Factor representing cost to emit
+                carbon in GBP/te.  Can be either a single figure which is applied
+                to each year or a profile in the form of a Tuple of two numpy
+                arrays, the first containing the date, the second the carbon prices.
+            co2_transport_storage_cost (float): Cost to transport and store carbon in
+                GBP/te.
             hours_in_year (int, optional): Number of hours in a year. Defaults to 8760.
 
         Returns:
-            float: _description_
+            NamedTuple: The calculated Levelised Cost of Energy including Long-Run
+                and Short-Run Marginal Cost and full breakdown of components.
         """
         pv_cf = self.build_pv_cashflows(
             load_factors, fuel_prices, carbon_prices, co2_transport_storage_cost
@@ -507,18 +541,28 @@ class Plant:
         carbon_prices: Union[float, Tuple],
         co2_transport_storage_cost: float,
         hours_in_year: Optional[int] = 8760,
-    ) -> float:
+    ) -> pd.DataFrame:
         """_summary_.
 
         Args:
-            load_factors (Union[float, Tuple]): _description_
-            fuel_prices (Union[float, Tuple]): _description_
-            carbon_prices (Union[float, Tuple]): _description_
-            co2_transport_storage_cost (float): _description_
+            load_factors (Union[float, Tuple]): Factor representing % of running in
+                the year.  Can be either a single figure which is applied to each
+                year or a profile in the form of a Tuple of two numpy arrays, the
+                first containing the date, the second the load factors.
+            fuel_prices (Union[float, Tuple]): Factor representing cost of fuel in
+                GBP/HHV MWh.  Can be either a single figure which is applied to each
+                year or a profile in the form of a Tuple of two numpy arrays, the
+                first containing the date, the second the fuel prices.
+            carbon_prices (Union[float, Tuple]): Factor representing cost to emit
+                carbon in GBP/te.  Can be either a single figure which is applied
+                to each year or a profile in the form of a Tuple of two numpy
+                arrays, the first containing the date, the second the carbon prices.
+            co2_transport_storage_cost (float): Cost to transport and store carbon in
+                GBP/te.
             hours_in_year (int, optional): _description_. Defaults to 8760.
 
         Returns:
-            float: The
+            pd.DataFrame: A profile of annual Levelised Cost of Energy.
         """
         pv_cf = self.build_pv_cashflows(
             load_factors, fuel_prices, carbon_prices, co2_transport_storage_cost
