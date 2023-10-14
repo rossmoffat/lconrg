@@ -51,22 +51,36 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="lconrg.lconrg.Plant.build_cashflows">
 <span class="sig-name descname"><span class="pre">build_cashflows</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">load_factors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuel_prices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">carbon_prices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">co2_transport_storage_cost</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hours_in_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8760</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lconrg.lconrg.Plant.build_cashflows" title="Permalink to this definition">¶</a></dt>
-<dd><p>_summary_.</p>
+<dd><p>Builds a profile of annual cashflows for the Plant class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>load_factors</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>Tuple</em><em>]</em>) – _description_</p></li>
-<li><p><strong>fuel_prices</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>Tuple</em><em>]</em>) – _description_</p></li>
-<li><p><strong>carbon_prices</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>Tuple</em><em>]</em>) – _description_</p></li>
-<li><p><strong>co2_transport_storage_cost</strong> (<em>float</em>) – _description_</p></li>
-<li><p><strong>hours_in_year</strong> (<em>int</em><em>, </em><em>optional</em>) – _description_. Defaults to 8760.</p></li>
+<li><p><strong>load_factors</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>Tuple</em><em>]</em>) – Factor representing % of running in
+the year.  Can be either a single figure which is applied to each
+year or a profile in the form of a Tuple of two numpy arrays, the
+first containing the date, the second the load factors.</p></li>
+<li><p><strong>fuel_prices</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>Tuple</em><em>]</em>) – Factor representing cost of fuel in
+GBP/HHV MWh.  Can be either a single figure which is applied to each
+year or a profile in the form of a Tuple of two numpy arrays, the
+first containing the date, the second the fuel prices.</p></li>
+<li><p><strong>carbon_prices</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>Tuple</em><em>]</em>) – Factor representing cost to emit
+carbon in GBP/te.  Can be either a single figure which is applied
+to each year or a profile in the form of a Tuple of two numpy
+arrays, the first containing the date, the second the carbon prices.</p></li>
+<li><p><strong>co2_transport_storage_cost</strong> (<em>float</em>) – Cost to transport and store carbon in
+GBP/te.</p></li>
+<li><p><strong>hours_in_year</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of hours in a year. Defaults to 8760.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>_description_</p>
+<dd class="field-even"><p><dl class="simple">
+<dt>A Pandas Dataframe indexed by year including cashflows</dt><dd><p>for Capital, Fixed, Variable, Fuel and Carbon costs.</p>
+</dd>
+</dl>
+</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>dict</p>
+<dd class="field-odd"><p>pd.DataFrame</p>
 </dd>
 </dl>
 </dd></dl>
@@ -76,8 +90,25 @@
 <span class="sig-name descname"><span class="pre">build_profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">years</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lconrg.lconrg.Plant.build_profile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Checks input and builds or returns profile of prices.</p>
 <dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>dict</em><em>[</em><em>date</em><em>, </em><em>float</em><em>]</em><em>]</em>) – The values to be
+used for the profile. Can either be a dict with keys of
+date and value, or can be a single float which is used
+to build a flat profile.</p></li>
+<li><p><strong>start_date</strong> (<em>date</em>) – The first date for the profile.</p></li>
+<li><p><strong>years</strong> (<em>int</em>) – The number of years to include in the profile.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Date and Value pairs.</p>
+</dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code></p>
+<dd class="field-odd"><p>Tuple</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>AttributeError</strong> – The dates in the dict don’t match the
+    expected lifetime of the Plant.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -85,22 +116,36 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="lconrg.lconrg.Plant.build_pv_cashflows">
 <span class="sig-name descname"><span class="pre">build_pv_cashflows</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">load_factors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuel_prices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">carbon_prices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">co2_transport_storage_cost</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hours_in_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8760</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lconrg.lconrg.Plant.build_pv_cashflows" title="Permalink to this definition">¶</a></dt>
-<dd><p>_summary_.</p>
+<dd><p>Builds a profile of cashflows for the Plant class in Present Value terms.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>load_factors</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>Tuple</em><em>]</em>) – _description_</p></li>
-<li><p><strong>fuel_prices</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>Tuple</em><em>]</em>) – _description_</p></li>
-<li><p><strong>carbon_prices</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>Tuple</em><em>]</em>) – _description_</p></li>
-<li><p><strong>co2_transport_storage_cost</strong> (<em>float</em>) – _description_</p></li>
-<li><p><strong>hours_in_year</strong> (<em>int</em><em>, </em><em>optional</em>) – _description_. Defaults to 8760.</p></li>
+<li><p><strong>load_factors</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>Tuple</em><em>]</em>) – Factor representing % of running in
+the year.  Can be either a single figure which is applied to each
+year or a profile in the form of a Tuple of two numpy arrays, the
+first containing the date, the second the load factors.</p></li>
+<li><p><strong>fuel_prices</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>Tuple</em><em>]</em>) – Factor representing cost of fuel in
+GBP/HHV MWh.  Can be either a single figure which is applied to each
+year or a profile in the form of a Tuple of two numpy arrays, the
+first containing the date, the second the fuel prices.</p></li>
+<li><p><strong>carbon_prices</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>Tuple</em><em>]</em>) – Factor representing cost to emit
+carbon in GBP/te.  Can be either a single figure which is applied
+to each year or a profile in the form of a Tuple of two numpy
+arrays, the first containing the date, the second the carbon prices.</p></li>
+<li><p><strong>co2_transport_storage_cost</strong> (<em>float</em>) – Cost to transport and store carbon in
+GBP/te.</p></li>
+<li><p><strong>hours_in_year</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of hours in a year. Defaults to 8760.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>_description_</p>
+<dd class="field-even"><p><dl class="simple">
+<dt>A Pandas Dataframe indexed by year including cashflows</dt><dd><p>for Capital, Fixed, Variable, Fuel and Carbon costs.</p>
+</dd>
+</dl>
+</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>float</p>
+<dd class="field-odd"><p>pd.DataFrame</p>
 </dd>
 </dl>
 </dd></dl>
@@ -112,18 +157,28 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>load_factors</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>Tuple</em><em>]</em>) – _description_</p></li>
-<li><p><strong>fuel_prices</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>Tuple</em><em>]</em>) – _description_</p></li>
-<li><p><strong>carbon_prices</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>Tuple</em><em>]</em>) – _description_</p></li>
-<li><p><strong>co2_transport_storage_cost</strong> (<em>float</em>) – _description_</p></li>
+<li><p><strong>load_factors</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>Tuple</em><em>]</em>) – Factor representing % of running in
+the year.  Can be either a single figure which is applied to each
+year or a profile in the form of a Tuple of two numpy arrays, the
+first containing the date, the second the load factors.</p></li>
+<li><p><strong>fuel_prices</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>Tuple</em><em>]</em>) – Factor representing cost of fuel in
+GBP/HHV MWh.  Can be either a single figure which is applied to each
+year or a profile in the form of a Tuple of two numpy arrays, the
+first containing the date, the second the fuel prices.</p></li>
+<li><p><strong>carbon_prices</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>Tuple</em><em>]</em>) – Factor representing cost to emit
+carbon in GBP/te.  Can be either a single figure which is applied
+to each year or a profile in the form of a Tuple of two numpy
+arrays, the first containing the date, the second the carbon prices.</p></li>
+<li><p><strong>co2_transport_storage_cost</strong> (<em>float</em>) – Cost to transport and store carbon in
+GBP/te.</p></li>
 <li><p><strong>hours_in_year</strong> (<em>int</em><em>, </em><em>optional</em>) – _description_. Defaults to 8760.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>_description_</p>
+<dd class="field-even"><p>A profile of annual Levelised Cost of Energy.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>float</p>
+<dd class="field-odd"><p>pd.DataFrame</p>
 </dd>
 </dl>
 </dd></dl>
@@ -131,22 +186,36 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="lconrg.lconrg.Plant.calculate_lcoe">
 <span class="sig-name descname"><span class="pre">calculate_lcoe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">load_factors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuel_prices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">carbon_prices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">co2_transport_storage_cost</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hours_in_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8760</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lconrg.lconrg.Plant.calculate_lcoe" title="Permalink to this definition">¶</a></dt>
-<dd><p>_summary_.</p>
+<dd><p>Calculates the Levelised Cost of Energy and returns as a Named Tuple.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>load_factors</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>Tuple</em><em>]</em>) – _description_</p></li>
-<li><p><strong>fuel_prices</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>Tuple</em><em>]</em>) – _description_</p></li>
-<li><p><strong>carbon_prices</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>Tuple</em><em>]</em>) – _description_</p></li>
-<li><p><strong>co2_transport_storage_cost</strong> (<em>float</em>) – _description_</p></li>
-<li><p><strong>hours_in_year</strong> (<em>int</em><em>, </em><em>optional</em>) – _description_. Defaults to 8760.</p></li>
+<li><p><strong>load_factors</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>Tuple</em><em>]</em>) – Factor representing % of running in
+the year.  Can be either a single figure which is applied to each
+year or a profile in the form of a Tuple of two numpy arrays, the
+first containing the date, the second the load factors.</p></li>
+<li><p><strong>fuel_prices</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>Tuple</em><em>]</em>) – Factor representing cost of fuel in
+GBP/HHV MWh.  Can be either a single figure which is applied to each
+year or a profile in the form of a Tuple of two numpy arrays, the
+first containing the date, the second the fuel prices.</p></li>
+<li><p><strong>carbon_prices</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>Tuple</em><em>]</em>) – Factor representing cost to emit
+carbon in GBP/te.  Can be either a single figure which is applied
+to each year or a profile in the form of a Tuple of two numpy
+arrays, the first containing the date, the second the carbon prices.</p></li>
+<li><p><strong>co2_transport_storage_cost</strong> (<em>float</em>) – Cost to transport and store carbon in
+GBP/te.</p></li>
+<li><p><strong>hours_in_year</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of hours in a year. Defaults to 8760.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>_description_</p>
+<dd class="field-even"><p><dl class="simple">
+<dt>The calculated Levelised Cost of Energy including Long-Run</dt><dd><p>and Short-Run Marginal Cost and full breakdown of components.</p>
+</dd>
+</dl>
+</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>float</p>
+<dd class="field-odd"><p>NamedTuple</p>
 </dd>
 </dl>
 </dd></dl>
@@ -161,14 +230,14 @@
 <li><p><strong>carbon_prices</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>Tuple</em><em>]</em>) – Factor representing cost to emit
 carbon in GBP/te.  Can be either a single figure which is applied
 to each year or a profile in the form of a Tuple of two numpy
-arrays, the first containing the date, the second the fuel prices.</p></li>
+arrays, the first containing the date, the second the carbon prices.</p></li>
 <li><p><strong>load_factors</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>Tuple</em><em>]</em>) – Factor representing % of running in
 the year.  Can be either a single figure which is applied to each
 year or a profile in the form of a Tuple of two numpy arrays, the
 first containing the date, the second the load factors.</p></li>
 <li><p><strong>co2_transport_storage_cost</strong> (<em>float</em>) – Cost to transport and store carbon in
 GBP/te.</p></li>
-<li><p><strong>hours_in_year</strong> (<em>int</em><em>, </em><em>optional</em>) – _description_. Defaults to 8760.</p></li>
+<li><p><strong>hours_in_year</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of hours in a year. Defaults to 8760.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -193,11 +262,12 @@ GBP/te.</p></li>
 <dd class="field-odd"><p><strong>data</strong> (<em>pd.Series</em>) – The pandas series to be checked.  Expected to have
 index of dates.</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Boolean which is True if the dates match</p>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>AttributeError</strong> – The dates in the series don’t match the
+    expected liftime of the Plant.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>bool</p>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -211,11 +281,12 @@ index of dates.</p>
 <dd class="field-odd"><p><strong>data</strong> (<em>tuple</em>) – The tuple to be checked.  Expected to be in the format
 ([dates], [data])</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Boolean which is True if the dates match</p>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>AttributeError</strong> – The dates in the Tuple don’t match the
+    expected lifetime of the Plant.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>bool</p>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -251,18 +322,17 @@ first containing the date, the second the load factors.</p></li>
 <dt class="sig sig-object py" id="lconrg.lconrg.Plant.fixed_cost_profile">
 <span class="sig-name descname"><span class="pre">fixed_cost_profile</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#lconrg.lconrg.Plant.fixed_cost_profile" title="Permalink to this definition">¶</a></dt>
 <dd><p>_summary_.</p>
+<p>Args:</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>load_factors</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>Tuple</em><em>]</em>) – _description_</p></li>
-<li><p><strong>hours_in_year</strong> (<em>int</em><em>, </em><em>optional</em>) – _description_. Defaults to 8760.</p></li>
-</ul>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><dl class="simple">
+<dt>Two numpy arrays, first showing dates and the second showing</dt><dd><p>fixed costs in kGBP.</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>_description_</p>
+</dl>
+</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Tuple</p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Tuple</p>
 </dd>
 </dl>
 </dd></dl>
@@ -282,7 +352,7 @@ first containing the date, the second the fuel prices.</p></li>
 the year.  Can be either a single figure which is applied to each
 year or a profile in the form of a Tuple of two numpy arrays, the
 first containing the date, the second the load factors.</p></li>
-<li><p><strong>hours_in_year</strong> (<em>int</em><em>, </em><em>optional</em>) – _description_. Defaults to 8760.</p></li>
+<li><p><strong>hours_in_year</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of hours in a year. Defaults to 8760.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -301,16 +371,23 @@ first containing the date, the second the load factors.</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="lconrg.lconrg.Plant.variable_cost_profile">
 <span class="sig-name descname"><span class="pre">variable_cost_profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">load_factors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hours_in_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8760</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lconrg.lconrg.Plant.variable_cost_profile" title="Permalink to this definition">¶</a></dt>
-<dd><p>_summary_.</p>
+<dd><p>Calculates annual variable cost in kGBP.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>load_factors</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>Tuple</em><em>]</em>) – _description_</p></li>
-<li><p><strong>hours_in_year</strong> (<em>int</em><em>, </em><em>optional</em>) – _description_. Defaults to 8760.</p></li>
+<li><p><strong>load_factors</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>Tuple</em><em>]</em>) – Factor representing % of running in
+the year.  Can be either a single figure which is applied to each
+year or a profile in the form of a Tuple of two numpy arrays, the
+first containing the date, the second the load factors.</p></li>
+<li><p><strong>hours_in_year</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of hours in a year. Defaults to 8760.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>_description_</p>
+<dd class="field-even"><p><dl class="simple">
+<dt>Two numpy arrays, first showing dates and the second showing</dt><dd><p>variable costs in kGBP.</p>
+</dd>
+</dl>
+</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Tuple</p>
@@ -323,20 +400,24 @@ first containing the date, the second the load factors.</p></li>
 <dl class="py function">
 <dt class="sig sig-object py" id="lconrg.lconrg.present_value_factor">
 <span class="sig-prename descclassname"><span class="pre">lconrg.lconrg.</span></span><span class="sig-name descname"><span class="pre">present_value_factor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">discount_rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_of_years</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lconrg.lconrg.present_value_factor" title="Permalink to this definition">¶</a></dt>
-<dd><p>_summary_.</p>
+<dd><p>Creates an annual discount factor profile.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>base_date</strong> (<em>date</em>) – _description_</p></li>
-<li><p><strong>discount_rate</strong> (<em>float</em>) – _description_</p></li>
-<li><p><strong>no_of_years</strong> (<em>int</em><em>, </em><em>optional</em>) – _description_. Defaults to 50.</p></li>
+<li><p><strong>base_date</strong> (<em>date</em>) – The base date for the calculation of Present Value factors.</p></li>
+<li><p><strong>discount_rate</strong> (<em>float</em>) – The annual discount rate to use.</p></li>
+<li><p><strong>no_of_years</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of years to be included. Defaults to 50.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>_description_</p>
+<dd class="field-even"><p><dl class="simple">
+<dt>A pair of numpy arrays, the first representing the date and the second</dt><dd><p>the corresponding discount factor.</p>
+</dd>
+</dl>
+</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>tuple</p>
+<dd class="field-odd"><p>Tuple</p>
 </dd>
 </dl>
 </dd></dl>
