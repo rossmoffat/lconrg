@@ -218,7 +218,7 @@ class Plant:
 
         if type(self.availability) is tuple:
             self.check_dates_tuple(self.availability)
-            availability = self.availability[1]
+            availability: [float] = self.availability[1]
 
         return (
             self.date_range,
