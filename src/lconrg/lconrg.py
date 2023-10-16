@@ -111,11 +111,9 @@ class Plant:
             + f"      COD Date: {self.cod:%d-%b-%Y}\n"
             + f"      Expected Lifetime: {self.lifetime} years\n"
             + f"      Net Capacity: {self.net_capacity_mw} MW\n"
+            + "      Capital Cost (£/kW): "
+            + f"{(sum(self.capital_cost.values()) / self.net_capacity_mw)}\n"
             + f"      Capital Cost (£k): {sum(self.capital_cost.values())}\n"
-            + (
-                "      Capital Cost (£/kW): ",
-                f"{(sum(self.capital_cost.values()) / self.net_capacity_mw)}\n",
-            )
             + f"{capex}"
             + "      Fixed Operating Costs (£k):\n"
             + f"{opex}"
