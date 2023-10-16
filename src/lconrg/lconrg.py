@@ -216,6 +216,10 @@ class Plant:
             self.check_dates_tuple(load_factors)
             load_factors = load_factors[1]
 
+        if type(self.availability) is tuple:
+            self.check_dates_tuple(self.availability)
+            availability = self.availability[1]
+
         return (
             self.date_range,
             np.full(
@@ -223,7 +227,7 @@ class Plant:
                 (
                     self.net_capacity_mw
                     * load_factors
-                    * self.availability[1]
+                    * availability
                     * hours_in_year
                     / 1000
                 ),
@@ -261,6 +265,10 @@ class Plant:
             self.check_dates_tuple(load_factors)
             load_factors = load_factors[1]
 
+        if type(self.availability) is tuple:
+            self.check_dates_tuple(self.availability)
+            availability = self.availability[1]
+
         return (
             self.date_range,
             np.full(
@@ -268,7 +276,7 @@ class Plant:
                 fuel_prices
                 * hours_in_year
                 * load_factors
-                * self.availability[1]
+                * availability
                 * self.net_capacity_mw
                 / self.hhv_eff
                 / 1000,
@@ -309,6 +317,10 @@ class Plant:
             self.check_dates_tuple(load_factors)
             load_factors = load_factors[1]
 
+        if type(self.availability) is tuple:
+            self.check_dates_tuple(self.availability)
+            availability = self.availability[1]
+
         return (
             self.date_range,
             np.full(
@@ -316,7 +328,7 @@ class Plant:
                 carbon_prices
                 * hours_in_year
                 * load_factors
-                * self.availability[1]
+                * availability
                 * (self.fuel_carbon_intensity / self.hhv_eff)
                 * (1 - self.carbon_capture_rate)
                 * self.net_capacity_mw
@@ -327,7 +339,7 @@ class Plant:
                 co2_transport_storage_cost
                 * hours_in_year
                 * load_factors
-                * self.availability[1]
+                * availability
                 * (self.fuel_carbon_intensity / self.hhv_eff)
                 * self.carbon_capture_rate
                 * self.net_capacity_mw
@@ -355,13 +367,17 @@ class Plant:
             self.check_dates_tuple(load_factors)
             load_factors = load_factors[1]
 
+        if type(self.availability) is tuple:
+            self.check_dates_tuple(self.availability)
+            availability = self.availability[1]
+
         return (
             self.date_range,
             np.full(
                 self.lifetime,
                 self.variable_opex_gbp_hr
                 * load_factors
-                * self.availability[1]
+                * availability
                 * hours_in_year
                 / 1000,
             ),
