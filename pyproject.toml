@@ -9,7 +9,6 @@ python = "^3.8,<3.11"
 numpy = "^1.22"
 
 [tool.poetry.dev-dependencies]
-pytest = "^6.2.5"
 coverage = "^5.5"
 pytest-cov = "^2.12.1"
 mypy = "^0.910"
