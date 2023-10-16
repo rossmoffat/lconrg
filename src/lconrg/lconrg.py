@@ -158,12 +158,15 @@ class Plant:
 
         return (date_range, np.full(years, num))
 
-    def check_dates_tuple(self, data: tuple) -> bool:
+    def check_dates_tuple(self, data: tuple) -> None:
         """Checks a tuple of numpy arrays for date alignment.
 
         Args:
             data (tuple): The tuple to be checked.  Expected to be in the format
                 ([dates], [data])
+
+        Returns:
+            None
 
         Raises:
             AttributeError: The dates in the Tuple don't match the
@@ -171,13 +174,18 @@ class Plant:
         """
         if np.all(data[0] != self.date_range):
             raise AttributeError("Input doesn't match plant lifetime!")
+        else:
+            return None
 
-    def check_dates_series(self, data: pd.Series) -> bool:
+    def check_dates_series(self, data: pd.Series) -> None:
         """Checks a pandas series for date alignment.
 
         Args:
             data (pd.Series): The pandas series to be checked.  Expected to have
                 index of dates.
+
+        Returns:
+            None
 
         Raises:
             AttributeError: The dates in the series don't match the
@@ -185,6 +193,8 @@ class Plant:
         """
         if np.all(data.index != self.date_range):
             raise AttributeError("Input doesn't match plant lifetime!")
+        else:
+            return None
 
     def energy_production_profile(
         self, load_factors: Union[float, Tuple], hours_in_year: Optional[int] = 8760
