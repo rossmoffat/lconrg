@@ -14,7 +14,7 @@ class Plant:
         self,
         fuel: str,
         hhv_eff: float,
-        availability: float,
+        availability: Union[float, dict[date, float]],
         cod_date: date,
         lifetime: int,
         net_capacity_mw: float,
@@ -31,7 +31,11 @@ class Plant:
         Args:
             fuel (str): The fuel used by the plant.
             hhv_eff (float): The HHV efficiency, a factor between 0 and 1.
-            availability (float): The annual availability, a factor between 0 and 1.
+            availability (Union[float, dict[date, float]]): The annual availability
+                profile, a factor between 0 and 1. Provided either as a single figure
+                to be repeated through the plant lifetime, or a profile of costs in a
+                dictionary where the key is a date and the value is the availability
+                factor.
             cod_date (date): The Commercial Operations Date.
             lifetime (int): Lifetime in full years.
             net_capacity_mw (float): Net power output of the plant in HHV MW.
@@ -66,9 +70,9 @@ class Plant:
 
         self.fuel = fuel
         self.hhv_eff = hhv_eff
-        self.availability = availability
         self.cod = cod_date
         self.lifetime = lifetime
+        self.availability = self.build_profile(availability, self.cod, self.lifetime)
         self.net_capacity_mw = net_capacity_mw
         self.capital_cost = capital_cost
         self.fixed_opex_kgbp = self.build_profile(
@@ -211,7 +215,7 @@ class Plant:
                 (
                     self.net_capacity_mw
                     * load_factors
-                    * self.availability
+                    * self.availability[1]
                     * hours_in_year
                     / 1000
                 ),
@@ -256,7 +260,7 @@ class Plant:
                 fuel_prices
                 * hours_in_year
                 * load_factors
-                * self.availability
+                * self.availability[1]
                 * self.net_capacity_mw
                 / self.hhv_eff
                 / 1000,
@@ -304,7 +308,7 @@ class Plant:
                 carbon_prices
                 * hours_in_year
                 * load_factors
-                * self.availability
+                * self.availability[1]
                 * (self.fuel_carbon_intensity / self.hhv_eff)
                 * (1 - self.carbon_capture_rate)
                 * self.net_capacity_mw
@@ -315,7 +319,7 @@ class Plant:
                 co2_transport_storage_cost
                 * hours_in_year
                 * load_factors
-                * self.availability
+                * self.availability[1]
                 * (self.fuel_carbon_intensity / self.hhv_eff)
                 * self.carbon_capture_rate
                 * self.net_capacity_mw
@@ -349,7 +353,7 @@ class Plant:
                 self.lifetime,
                 self.variable_opex_gbp_hr
                 * load_factors
-                * self.availability
+                * self.availability[1]
                 * hours_in_year
                 / 1000,
             ),
