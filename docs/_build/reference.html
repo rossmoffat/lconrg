@@ -46,8 +46,46 @@
 <p>Levelised Cost of eNeRGy.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="lconrg.lconrg.Plant">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lconrg.lconrg.</span></span><span class="sig-name descname"><span class="pre">Plant</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fuel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hhv_eff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">availability</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cod_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lifetime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">net_capacity_mw</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">capital_cost</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fixed_opex_kgbp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variable_opex_gbp_hr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cost_base_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">discount_rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuel_carbon_intensity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">carbon_capture_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lconrg.lconrg.Plant" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lconrg.lconrg.</span></span><span class="sig-name descname"><span class="pre">Plant</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fuel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hhv_eff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">availability</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cod_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lifetime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">net_capacity_mw</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">capital_cost</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fixed_opex_kgbp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variable_opex_gbp_hr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cost_base_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">discount_rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuel_carbon_intensity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">carbon_capture_rate</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lconrg.lconrg.Plant" title="Permalink to this definition">¶</a></dt>
 <dd><p>A class to hold the information about the plant being modelled.</p>
+<p>Object class for energy production plant.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fuel</strong> (<em>str</em>) – The fuel used by the plant.</p></li>
+<li><p><strong>hhv_eff</strong> (<em>float</em>) – The HHV efficiency, a factor between 0 and 1.</p></li>
+<li><p><strong>availability</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>dict</em><em>[</em><em>date</em><em>, </em><em>float</em><em>]</em><em>]</em>) – The annual availability
+profile, a factor between 0 and 1. Provided either as a single figure
+to be repeated through the plant lifetime, or a profile of costs in a
+dictionary where the key is a date and the value is the availability
+factor.</p></li>
+<li><p><strong>cod_date</strong> (<em>date</em>) – The Commercial Operations Date.</p></li>
+<li><p><strong>lifetime</strong> (<em>int</em>) – Lifetime in full years.</p></li>
+<li><p><strong>net_capacity_mw</strong> (<em>float</em>) – Net power output of the plant in HHV MW.</p></li>
+<li><p><strong>capital_cost</strong> (<em>dict</em><em>[</em><em>date</em><em>, </em><em>float</em><em>]</em>) – A dictionary containing the capital
+cost profile, where key is a date and value is the Capital cost
+in kGBP.</p></li>
+<li><p><strong>fixed_opex_kgbp</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>dict</em><em>[</em><em>date</em><em>, </em><em>float</em><em>]</em><em>]</em>) – The fixed opex
+profile, provided as either an annual figure to be repeated
+through the plant lifetime, or a profile of costs in a dictionary
+where key is the date and value is the fixed cost.  Both in KGBP.</p></li>
+<li><p><strong>variable_opex_gbp_hr</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>dict</em><em>[</em><em>date</em><em>, </em><em>float</em><em>]</em><em>]</em>) – The variable opex
+profile, provided as either an annual figure to be repeated
+through the plant lifetime, or a profile of costs in a dictionary
+where key is the date and value is the fixed cost.  Both in GBP per hr.</p></li>
+<li><p><strong>cost_base_date</strong> (<em>date</em>) – The base date for all costs.</p></li>
+<li><p><strong>discount_rate</strong> (<em>float</em>) – The target discount rate for the investment.</p></li>
+<li><p><strong>fuel_carbon_intensity</strong> (<em>float</em>) – The carbon intensity of
+the fuel in te/MWh.</p></li>
+<li><p><strong>carbon_capture_rate</strong> (<em>float</em>) – The carbon capture rate as
+a factor between 0 and 1.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – Where the HHV Efficiency or Availability Factor is
+    negative or greater than 1</p>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="lconrg.lconrg.Plant.build_cashflows">
 <span class="sig-name descname"><span class="pre">build_cashflows</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">load_factors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuel_prices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">carbon_prices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">co2_transport_storage_cost</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hours_in_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8760</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lconrg.lconrg.Plant.build_cashflows" title="Permalink to this definition">¶</a></dt>
@@ -69,7 +107,7 @@ to each year or a profile in the form of a Tuple of two numpy
 arrays, the first containing the date, the second the carbon prices.</p></li>
 <li><p><strong>co2_transport_storage_cost</strong> (<em>float</em>) – Cost to transport and store carbon in
 GBP/te.</p></li>
-<li><p><strong>hours_in_year</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of hours in a year. Defaults to 8760.</p></li>
+<li><p><strong>hours_in_year</strong> (<em>int</em>) – Number of hours in a year. Defaults to 8760.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -101,14 +139,21 @@ to build a flat profile.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Date and Value pairs.</p>
+<dd class="field-even"><p><dl class="simple">
+<dt>Two numpy ndarrays, the first containing Date and</dt><dd><p>the second Values.</p>
+</dd>
+</dl>
+</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Tuple</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>AttributeError</strong> – The dates in the dict don’t match the
-    expected lifetime of the Plant.</p>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>AttributeError</strong> – The dates in the dict don’t match the
+    expected lifetime of the Plant.</p></li>
+<li><p><strong>TypeError</strong> – The input type is neither a float, nor a Tuple.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -134,7 +179,7 @@ to each year or a profile in the form of a Tuple of two numpy
 arrays, the first containing the date, the second the carbon prices.</p></li>
 <li><p><strong>co2_transport_storage_cost</strong> (<em>float</em>) – Cost to transport and store carbon in
 GBP/te.</p></li>
-<li><p><strong>hours_in_year</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of hours in a year. Defaults to 8760.</p></li>
+<li><p><strong>hours_in_year</strong> (<em>int</em>) – Number of hours in a year. Defaults to 8760.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -153,7 +198,7 @@ GBP/te.</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="lconrg.lconrg.Plant.calculate_annual_lcoe">
 <span class="sig-name descname"><span class="pre">calculate_annual_lcoe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">load_factors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuel_prices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">carbon_prices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">co2_transport_storage_cost</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hours_in_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8760</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lconrg.lconrg.Plant.calculate_annual_lcoe" title="Permalink to this definition">¶</a></dt>
-<dd><p>_summary_.</p>
+<dd><p>Calculates an annual profile of Levelised Cost of Energy.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -171,7 +216,7 @@ to each year or a profile in the form of a Tuple of two numpy
 arrays, the first containing the date, the second the carbon prices.</p></li>
 <li><p><strong>co2_transport_storage_cost</strong> (<em>float</em>) – Cost to transport and store carbon in
 GBP/te.</p></li>
-<li><p><strong>hours_in_year</strong> (<em>int</em><em>, </em><em>optional</em>) – _description_. Defaults to 8760.</p></li>
+<li><p><strong>hours_in_year</strong> (<em>int</em>) – _description_. Defaults to 8760.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -204,7 +249,7 @@ to each year or a profile in the form of a Tuple of two numpy
 arrays, the first containing the date, the second the carbon prices.</p></li>
 <li><p><strong>co2_transport_storage_cost</strong> (<em>float</em>) – Cost to transport and store carbon in
 GBP/te.</p></li>
-<li><p><strong>hours_in_year</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of hours in a year. Defaults to 8760.</p></li>
+<li><p><strong>hours_in_year</strong> (<em>int</em>) – Number of hours in a year. Defaults to 8760.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -215,7 +260,7 @@ GBP/te.</p></li>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>NamedTuple</p>
+<dd class="field-odd"><p>Tuple</p>
 </dd>
 </dl>
 </dd></dl>
@@ -237,7 +282,7 @@ year or a profile in the form of a Tuple of two numpy arrays, the
 first containing the date, the second the load factors.</p></li>
 <li><p><strong>co2_transport_storage_cost</strong> (<em>float</em>) – Cost to transport and store carbon in
 GBP/te.</p></li>
-<li><p><strong>hours_in_year</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of hours in a year. Defaults to 8760.</p></li>
+<li><p><strong>hours_in_year</strong> (<em>int</em>) – Number of hours in a year. Defaults to 8760.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -262,12 +307,15 @@ GBP/te.</p></li>
 <dd class="field-odd"><p><strong>data</strong> (<em>pd.Series</em>) – The pandas series to be checked.  Expected to have
 index of dates.</p>
 </dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>AttributeError</strong> – The dates in the series don’t match the
     expected liftime of the Plant.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -281,12 +329,15 @@ index of dates.</p>
 <dd class="field-odd"><p><strong>data</strong> (<em>tuple</em>) – The tuple to be checked.  Expected to be in the format
 ([dates], [data])</p>
 </dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>AttributeError</strong> – The dates in the Tuple don’t match the
     expected lifetime of the Plant.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -302,7 +353,7 @@ index of dates.</p>
 the year.  Can be either a single figure which is applied to each
 year or a profile in the form of a Tuple of two numpy arrays, the
 first containing the date, the second the load factors.</p></li>
-<li><p><strong>hours_in_year</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of hours in a year. Defaults to 8760.</p></li>
+<li><p><strong>hours_in_year</strong> (<em>int</em>) – Number of hours in a year. Defaults to 8760.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -352,7 +403,7 @@ first containing the date, the second the fuel prices.</p></li>
 the year.  Can be either a single figure which is applied to each
 year or a profile in the form of a Tuple of two numpy arrays, the
 first containing the date, the second the load factors.</p></li>
-<li><p><strong>hours_in_year</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of hours in a year. Defaults to 8760.</p></li>
+<li><p><strong>hours_in_year</strong> (<em>int</em>) – Number of hours in a year. Defaults to 8760.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -379,7 +430,7 @@ first containing the date, the second the load factors.</p></li>
 the year.  Can be either a single figure which is applied to each
 year or a profile in the form of a Tuple of two numpy arrays, the
 first containing the date, the second the load factors.</p></li>
-<li><p><strong>hours_in_year</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of hours in a year. Defaults to 8760.</p></li>
+<li><p><strong>hours_in_year</strong> (<em>int</em>) – Number of hours in a year. Defaults to 8760.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -406,7 +457,7 @@ first containing the date, the second the load factors.</p></li>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>base_date</strong> (<em>date</em>) – The base date for the calculation of Present Value factors.</p></li>
 <li><p><strong>discount_rate</strong> (<em>float</em>) – The annual discount rate to use.</p></li>
-<li><p><strong>no_of_years</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of years to be included. Defaults to 50.</p></li>
+<li><p><strong>no_of_years</strong> (<em>int</em>) – The number of years to be included. Defaults to 50.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -482,7 +533,7 @@ first containing the date, the second the load factors.</p></li>
 
       |
       Powered by <a href="http://sphinx-doc.org/">Sphinx 5.3.0</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
 
       |
       <a href="_sources/reference.rst.txt"
