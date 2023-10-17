@@ -65,8 +65,12 @@ class Plant:
         if not 0 <= hhv_eff <= 1:
             raise ValueError("hhv_eff is out of range!")
 
-        if not 0 <= availability <= 1:
-            raise ValueError("Availability factor is out of range!")
+        if type(availability) is float:
+            if not 0 <= availability <= 1:
+                raise ValueError("Availability factor is out of range!")
+        elif type(availability) is Tuple:
+            if (availability[1].min()) < 0 | (availability[1].max() > 1):
+                raise ValueError("Availability factor is out of range!")
 
         self.fuel = fuel
         self.hhv_eff = hhv_eff
