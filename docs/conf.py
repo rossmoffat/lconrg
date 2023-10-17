@@ -8,3 +8,4 @@ extensions = [
     "sphinx_autodoc_typehints",
 ]
 autodoc_mock_imports = ["pandas"]
+autoclass_content = "both"
