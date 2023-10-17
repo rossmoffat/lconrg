@@ -40,13 +40,13 @@ def example_Plant_data():
 @pytest.mark.parametrize(
     "opex",
     [
-        40,
+        40.0,
         {
-            datetime.date(2022, 1, 1): 40,
-            datetime.date(2023, 1, 1): 40,
-            datetime.date(2024, 1, 1): 40,
-            datetime.date(2025, 1, 1): 40,
-            datetime.date(2026, 1, 1): 40,
+            datetime.date(2022, 1, 1): 40.0,
+            datetime.date(2023, 1, 1): 40.0,
+            datetime.date(2024, 1, 1): 40.0,
+            datetime.date(2025, 1, 1): 40.0,
+            datetime.date(2026, 1, 1): 40.0,
         },
     ],
 )
@@ -89,13 +89,13 @@ def test_present_value():
 @pytest.mark.parametrize(
     "opex",
     [
-        40,
+        40.0,
         {
-            datetime.date(2022, 1, 1): 40,
-            datetime.date(2023, 1, 1): 40,
-            datetime.date(2024, 1, 1): 40,
-            datetime.date(2025, 1, 1): 40,
-            datetime.date(2026, 1, 1): 40,
+            datetime.date(2022, 1, 1): 40.0,
+            datetime.date(2023, 1, 1): 40.0,
+            datetime.date(2024, 1, 1): 40.0,
+            datetime.date(2025, 1, 1): 40.0,
+            datetime.date(2026, 1, 1): 40.0,
         },
     ],
 )
@@ -105,7 +105,7 @@ def test_fuel_costs_profile(example_Plant_data, opex):
         **example_Plant_data, fixed_opex_kgbp=opex, variable_opex_gbp_hr=opex
     )
     load_factors = 0.5
-    gas_prices = 20
+    gas_prices = 20.0
     result = test_plant_object.fuel_costs_profile(gas_prices, load_factors)
     expected = (
         np.arange(

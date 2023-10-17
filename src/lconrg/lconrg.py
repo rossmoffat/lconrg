@@ -101,8 +101,10 @@ class Plant:
         for key, values in self.capital_cost.items():
             capex += f"        {key:%Y}: {values}\n"
 
-        for i, data in enumerate(self.fixed_opex_kgbp[0]):
-            opex += f"        {data}: {self.fixed_opex_kgbp[1][i]}\n"
+        for i in self.fixed_opex_kgbp:
+            opex += (
+                f"        {self.fixed_opex_kgbp[0][i]}: {self.fixed_opex_kgbp[1][i]}\n"
+            )
 
         return (
             f"Plant(Fuel: {self.fuel}\n"
@@ -126,7 +128,7 @@ class Plant:
 
     def build_profile(
         self, num: Union[float, dict[date, float]], start_date: date, years: int
-    ) -> Tuple:
+    ) -> Tuple[date, float]:
         """Checks input and builds or returns profile of prices.
 
         Args:
@@ -143,6 +145,7 @@ class Plant:
         Raises:
              AttributeError: The dates in the dict don't match the
                 expected lifetime of the Plant.
+             TypeError: The input type is neither a float, nor a Tuple.
 
         """
         date_range = np.arange(
@@ -156,9 +159,13 @@ class Plant:
             else:
                 return (date_range, np.fromiter(num.values(), dtype=float))
 
-        return (date_range, np.full(years, num))
+        elif type(num) is float:
+            return (date_range, np.full(years, num))
 
-    def check_dates_tuple(self, data: tuple) -> None:
+        else:
+            raise TypeError()
+
+    def check_dates_tuple(self, data: tuple[date, float]) -> None:
         """Checks a tuple of numpy arrays for date alignment.
 
         Args:
@@ -197,7 +204,7 @@ class Plant:
             return None
 
     def energy_production_profile(
-        self, load_factors: Union[float, Tuple], hours_in_year: Optional[int] = 8760
+        self, load_factors: Union[float, Tuple[date, float]], hours_in_year: int = 8760
     ) -> Tuple:
         """Function to calculate the energy production per year in GWh HHV.
 
@@ -206,7 +213,7 @@ class Plant:
                 the year.  Can be either a single figure which is applied to each
                 year or a profile in the form of a Tuple of two numpy arrays, the
                 first containing the date, the second the load factors.
-            hours_in_year (int, optional): Number of hours in a year. Defaults to 8760.
+            hours_in_year (int): Number of hours in a year. Defaults to 8760.
 
         Returns:
             Tuple: Two numpy arrays, first showing dates and the second showing
@@ -214,11 +221,13 @@ class Plant:
         """
         if type(load_factors) is tuple:
             self.check_dates_tuple(load_factors)
-            load_factors = load_factors[1]
+            load_factor = load_factors[1]
 
-        if type(self.availability) is tuple:
-            self.check_dates_tuple(self.availability)
-            availability: [float] = self.availability[1]
+        elif type(load_factors) is float:
+            load_factor = load_factors
+
+        self.check_dates_tuple(self.availability)
+        availability = self.availability[1]
 
         return (
             self.date_range,
@@ -226,7 +235,7 @@ class Plant:
                 self.lifetime,
                 (
                     self.net_capacity_mw
-                    * load_factors
+                    * load_factor
                     * availability
                     * hours_in_year
                     / 1000

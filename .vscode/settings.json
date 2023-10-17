@@ -1,6 +1,6 @@
 {
     "python.pythonPath": "/Users/rossmoffat/Library/Caches/pypoetry/virtualenvs/lconrg-VW5uV-Ez-py3.7/bin/python",
-    "python.formatting.provider": "black",
+    "python.formatting.provider": "none",
     "python.testing.pytestArgs": [
         "tests"
     ],
@@ -12,5 +12,8 @@
     ],
     "python.linting.enabled": true,
     "autoDocstring.docstringFormat": "google",
-    "esbonio.sphinx.confDir": ""
+    "esbonio.sphinx.confDir": "",
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter"
+    }
 }
