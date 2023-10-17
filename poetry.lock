@@ -51,9 +51,6 @@ category = "dev"
 optional = false
 python-versions = ">=3.7"
 
-[package.dependencies]
-pytz = {version = ">=2015.7", markers = "python_version < \"3.9\""}
-
 [package.extras]
 dev = ["pytest (>=6.0)", "pytest-cov", "freezegun (>=1.0,<2.0)"]
 
@@ -574,11 +571,11 @@ test = ["codecov (>=2.0.5)", "coverage (>=4.2)", "flake8 (>=3.0.4)", "pytest (>=
 
 [[package]]
 name = "numpy"
-version = "1.24.4"
+version = "1.26.1"
 description = "Fundamental package for array computing in Python"
 category = "main"
 optional = false
-python-versions = ">=3.8"
+python-versions = "<3.13,>=3.9"
 
 [[package]]
 name = "packaging"
@@ -606,6 +603,18 @@ pytz = ">=2020.1"
 
 [package.extras]
 test = ["hypothesis (>=5.5.3)", "pytest (>=6.0)", "pytest-xdist (>=1.31)"]
+
+[[package]]
+name = "pandas-stubs"
+version = "2.1.1.230928"
+description = "Type annotations for pandas"
+category = "dev"
+optional = false
+python-versions = ">=3.9"
+
+[package.dependencies]
+numpy = {version = ">=1.26.0", markers = "python_version < \"3.13\""}
+types-pytz = ">=2022.1.1"
 
 [[package]]
 name = "parso"
@@ -870,7 +879,6 @@ python-versions = ">=3.7.0"
 [package.dependencies]
 markdown-it-py = ">=2.2.0"
 pygments = ">=2.13.0,<3.0.0"
-typing-extensions = {version = ">=4.0.0,<5.0", markers = "python_version < \"3.9\""}
 
 [package.extras]
 jupyter = ["ipywidgets (>=7.5.1,<9)"]
@@ -1099,6 +1107,14 @@ docs = ["myst-parser", "pydata-sphinx-theme", "sphinx"]
 test = ["argcomplete (>=3.0.3)", "mypy (>=1.5.1)", "pre-commit", "pytest-mock", "pytest-mypy-testing", "pytest (>=7.0,<7.5)"]
 
 [[package]]
+name = "types-pytz"
+version = "2023.3.1.1"
+description = "Typing stubs for pytz"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "typing-extensions"
 version = "4.8.0"
 description = "Backported and Experimental Type Hints for Python 3.8+"
@@ -1178,8 +1194,8 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-ena
 
 [metadata]
 lock-version = "1.1"
-python-versions = "^3.8.1,<3.11"
-content-hash = "5cc6a535f512af9063cf781cbca69f04ef691ae1a53229440be63e9b95516cb6"
+python-versions = "^3.9,<3.11"
+content-hash = "f07633435a74e76042e5c571fc43c2f61cef31d05d7abdb0b07d5443ce4bf719"
 
 [metadata.files]
 alabaster = []
@@ -1314,6 +1330,7 @@ ninja = []
 numpy = []
 packaging = []
 pandas = []
+pandas-stubs = []
 parso = [
     {file = "parso-0.8.3-py2.py3-none-any.whl", hash = "sha256:c001d4636cd3aecdaf33cbb40aebb59b094be2a74c556778ef5576c175e19e75"},
     {file = "parso-0.8.3.tar.gz", hash = "sha256:8c07be290bb59f03588915921e29e8a50002acaf2cdc5fa0e0114f91709fafa0"},
@@ -1394,6 +1411,7 @@ toml = [
 ]
 tomli = []
 traitlets = []
+types-pytz = []
 typing-extensions = []
 typing-inspect = []
 urllib3 = []

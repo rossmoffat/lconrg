@@ -1,10 +1,15 @@
 """Levelised Cost of eNeRGy."""
 from collections import namedtuple
 from datetime import date
-from typing import Optional, Tuple, Union
+from typing import Tuple, Union
 
 import numpy as np
+import numpy.typing as npt
 import pandas as pd
+
+NDArrayDate = npt.NDArray[np.datetime64]
+NDArrayFloat = npt.NDArray[np.float64]
+NDArrayInt = npt.NDArray[np.int32]
 
 
 class Plant:
@@ -100,15 +105,15 @@ class Plant:
             str: Summary of Plant class
         """
         capex = str()
-        opex = str()
 
         for key, values in self.capital_cost.items():
             capex += f"        {key:%Y}: {values}\n"
 
-        for i in self.fixed_opex_kgbp:
-            opex += (
-                f"        {self.fixed_opex_kgbp[0][i]}: {self.fixed_opex_kgbp[1][i]}\n"
-            )
+        opex = [
+            f"        {self.fixed_opex_kgbp[0].item(i)}"
+            + f": {self.fixed_opex_kgbp[1].item(i)}\n"
+            for i in self.fixed_opex_kgbp[0]
+        ]
 
         return (
             f"Plant(Fuel: {self.fuel}\n"
@@ -132,7 +137,7 @@ class Plant:
 
     def build_profile(
         self, num: Union[float, dict[date, float]], start_date: date, years: int
-    ) -> Tuple[np.ndarray, np.ndarray]:
+    ) -> Tuple[NDArrayDate, NDArrayFloat]:
         """Checks input and builds or returns profile of prices.
 
         Args:
@@ -170,7 +175,9 @@ class Plant:
         else:
             raise TypeError()
 
-    def check_dates_tuple(self, data: tuple[date, float]) -> None:
+    def check_dates_tuple(
+        self, data: Union[tuple[date, float], tuple[NDArrayDate, NDArrayFloat]]
+    ) -> None:
         """Checks a tuple of numpy arrays for date alignment.
 
         Args:
@@ -209,8 +216,10 @@ class Plant:
             return None
 
     def energy_production_profile(
-        self, load_factors: Union[float, Tuple[date, float]], hours_in_year: int = 8760
-    ) -> Tuple:
+        self,
+        load_factors: Union[float, tuple[NDArrayDate, NDArrayFloat]],
+        hours_in_year: int = 8760,
+    ) -> tuple[NDArrayDate, NDArrayFloat]:
         """Function to calculate the energy production per year in GWh HHV.
 
         Args:
@@ -228,7 +237,7 @@ class Plant:
             self.check_dates_tuple(load_factors)
             load_factor = load_factors[1]
 
-        elif type(load_factors) is float:
+        if type(load_factors) is float:
             load_factor = load_factors
 
         self.check_dates_tuple(self.availability)
@@ -250,10 +259,10 @@ class Plant:
 
     def fuel_costs_profile(
         self,
-        fuel_prices: Union[float, Tuple[np.ndarray, np.ndarray]],
-        load_factors: Union[float, Tuple[np.ndarray, np.ndarray]],
+        fuel_prices: Union[float, tuple[NDArrayDate, NDArrayFloat]],
+        load_factors: Union[float, tuple[NDArrayDate, NDArrayFloat]],
         hours_in_year: int = 8760,
-    ) -> Tuple:
+    ) -> tuple[NDArrayDate, NDArrayFloat]:
         """Calculates an annual fuel costs profile in kGBP.
 
         Args:
@@ -304,11 +313,11 @@ class Plant:
 
     def carbon_cost_profile(
         self,
-        carbon_prices: Union[float, Tuple[np.ndarray, np.ndarray]],
-        load_factors: Union[float, Tuple[np.ndarray, np.ndarray]],
+        carbon_prices: Union[float, tuple[NDArrayDate, NDArrayFloat]],
+        load_factors: Union[float, tuple[NDArrayDate, NDArrayFloat]],
         co2_transport_storage_cost: float,
         hours_in_year: int = 8760,
-    ) -> Tuple:
+    ) -> tuple[NDArrayDate, NDArrayFloat, NDArrayFloat]:
         """Calculates annual carbon cost profiles for emission and storage in kGBP.
 
         Args:
@@ -373,9 +382,9 @@ class Plant:
 
     def variable_cost_profile(
         self,
-        load_factors: Union[float, Tuple[np.ndarray, np.ndarray]],
-        hours_in_year: Optional[int] = 8760,
-    ) -> Tuple:
+        load_factors: Union[float, tuple[NDArrayDate, NDArrayFloat]],
+        hours_in_year: int = 8760,
+    ) -> tuple[NDArrayDate, NDArrayFloat]:
         """Calculates annual variable cost in kGBP.
 
         Args:
@@ -383,7 +392,7 @@ class Plant:
                 the year.  Can be either a single figure which is applied to each
                 year or a profile in the form of a Tuple of two numpy arrays, the
                 first containing the date, the second the load factors.
-            hours_in_year (int, optional): Number of hours in a year. Defaults to 8760.
+            hours_in_year (int): Number of hours in a year. Defaults to 8760.
 
         Returns:
             Tuple: Two numpy arrays, first showing dates and the second showing
@@ -413,7 +422,7 @@ class Plant:
 
     def fixed_cost_profile(
         self,
-    ) -> Tuple:
+    ) -> tuple[NDArrayDate, NDArrayFloat]:
         """_summary_.
 
         Args:
@@ -422,22 +431,19 @@ class Plant:
             Tuple: Two numpy arrays, first showing dates and the second showing
                 fixed costs in kGBP.
         """
-        if type(self.fixed_opex_kgbp) is tuple:
-            self.check_dates_tuple(self.fixed_opex_kgbp)
-            fixed_costs = self.fixed_opex_kgbp[1]
-        else:
-            fixed_costs = self.fixed_opex_kgbp
+        self.check_dates_tuple(self.fixed_opex_kgbp)
+        fixed_cost = self.fixed_opex_kgbp[1]
 
         return (
             self.date_range,
-            np.full(self.lifetime, fixed_costs),
+            np.full(self.lifetime, fixed_cost),
         )
 
     def build_cashflows(
         self,
-        load_factors: Union[float, Tuple[np.ndarray, np.ndarray]],
-        fuel_prices: Union[float, Tuple[np.ndarray, np.ndarray]],
-        carbon_prices: Union[float, Tuple[np.ndarray, np.ndarray]],
+        load_factors: Union[float, tuple[NDArrayDate, NDArrayFloat]],
+        fuel_prices: Union[float, tuple[NDArrayDate, NDArrayFloat]],
+        carbon_prices: Union[float, tuple[NDArrayDate, NDArrayFloat]],
         co2_transport_storage_cost: float,
         hours_in_year: int = 8760,
     ) -> pd.DataFrame:
@@ -488,9 +494,9 @@ class Plant:
 
     def build_pv_cashflows(
         self,
-        load_factors: Union[float, Tuple[np.ndarray, np.ndarray]],
-        fuel_prices: Union[float, Tuple[np.ndarray, np.ndarray]],
-        carbon_prices: Union[float, Tuple[np.ndarray, np.ndarray]],
+        load_factors: Union[float, tuple[NDArrayDate, NDArrayFloat]],
+        fuel_prices: Union[float, tuple[NDArrayDate, NDArrayFloat]],
+        carbon_prices: Union[float, tuple[NDArrayDate, NDArrayFloat]],
         co2_transport_storage_cost: float,
         hours_in_year: int = 8760,
     ) -> pd.DataFrame:
@@ -530,9 +536,9 @@ class Plant:
 
     def calculate_lcoe(
         self,
-        load_factors: Union[float, Tuple[np.ndarray, np.ndarray]],
-        fuel_prices: Union[float, Tuple[np.ndarray, np.ndarray]],
-        carbon_prices: Union[float, Tuple[np.ndarray, np.ndarray]],
+        load_factors: Union[float, tuple[NDArrayDate, NDArrayFloat]],
+        fuel_prices: Union[float, tuple[NDArrayDate, NDArrayFloat]],
+        carbon_prices: Union[float, tuple[NDArrayDate, NDArrayFloat]],
         co2_transport_storage_cost: float,
         hours_in_year: int = 8760,
     ) -> Tuple:
@@ -562,7 +568,7 @@ class Plant:
         pv_cf = self.build_pv_cashflows(
             load_factors, fuel_prices, carbon_prices, co2_transport_storage_cost
         )
-        srmc = pv_cf[
+        srmc_df = pv_cf[
             [
                 "variable_opex_kgbp",
                 "fuel_kgbp",
@@ -570,9 +576,9 @@ class Plant:
                 "carbon_storage_kgbp",
             ]
         ]
-        lrmc = pv_cf[["capital_kgbp", "fixed_opex_kgbp"]]
-        srmc = sum(srmc.stack().values) / sum(pv_cf.production_GWth.values)
-        lrmc = sum(lrmc.stack().values) / sum(pv_cf.production_GWth.values)
+        lrmc_df = pv_cf[["capital_kgbp", "fixed_opex_kgbp"]]
+        srmc = sum(srmc_df.stack().values) / sum(pv_cf.production_GWth.values)
+        lrmc = sum(lrmc_df.stack().values) / sum(pv_cf.production_GWth.values)
         lcoe = srmc + lrmc
         full = pv_cf.drop("production_GWth", axis=1).sum() / pv_cf.production_GWth.sum()
 
@@ -604,12 +610,12 @@ class Plant:
 
     def calculate_annual_lcoe(
         self,
-        load_factors: Union[float, Tuple[np.ndarray, np.ndarray]],
-        fuel_prices: Union[float, Tuple[np.ndarray, np.ndarray]],
-        carbon_prices: Union[float, Tuple[np.ndarray, np.ndarray]],
+        load_factors: Union[float, tuple[NDArrayDate, NDArrayFloat]],
+        fuel_prices: Union[float, tuple[NDArrayDate, NDArrayFloat]],
+        carbon_prices: Union[float, tuple[NDArrayDate, NDArrayFloat]],
         co2_transport_storage_cost: float,
         hours_in_year: int = 8760,
-    ) -> pd.DataFrame:
+    ) -> pd.Series:
         """Calculates an annual profile of Levelised Cost of Energy.
 
         Args:
@@ -650,27 +656,29 @@ class Plant:
 def present_value_factor(
     base_date: date,
     discount_rate: float,
-    no_of_years: Optional[int] = 50,
-) -> Tuple:
+    no_of_years: int = 50,
+) -> tuple[NDArrayDate, NDArrayFloat]:
     """Creates an annual discount factor profile.
 
     Args:
         base_date (date): The base date for the calculation of Present Value factors.
         discount_rate (float): The annual discount rate to use.
-        no_of_years (int, optional): The number of years to be included. Defaults to 50.
+        no_of_years (int): The number of years to be included. Defaults to 50.
 
     Returns:
         Tuple: A pair of numpy arrays, the first representing the date and the second
             the corresponding discount factor.
     """
-    date_range = np.arange(
+    date_range: NDArrayDate = np.arange(
         base_date,
         np.datetime64(base_date, "Y") + np.timedelta64(no_of_years, "Y"),
         dtype="datetime64[Y]",
     )
 
-    data = 1 / (
-        (1 + discount_rate) ** np.int32(date_range - np.datetime64(base_date, "Y"))
+    data: NDArrayFloat = np.full(
+        no_of_years,
+        1
+        / ((1 + discount_rate) ** np.int32(date_range - np.datetime64(base_date, "Y"))),
     )
 
     return (date_range, data)

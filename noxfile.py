@@ -6,7 +6,13 @@ import nox
 from nox.sessions import Session
 
 package = "lconrg"
-nox.options.sessions = "lint", "safety", "mypy", "pytype", "tests"
+nox.options.sessions = (
+    "lint",
+    "safety",
+    "mypy",
+    "pytype",
+    "tests",
+)
 locations = "src", "tests", "noxfile.py", "docs/conf.py"
 
 
@@ -81,7 +87,7 @@ def safety(session: Session) -> None:
 def mypy(session: Session) -> None:
     """Type-check using mypy."""
     args = session.posargs or locations
-    install_with_constraints(session, "mypy")
+    install_with_constraints(session, "mypy", "numpy", "pandas-stubs")
     session.run("mypy", *args)
 
 

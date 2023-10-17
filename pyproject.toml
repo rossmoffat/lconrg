@@ -5,7 +5,7 @@ description = ""
 authors = ["Your Name <you@example.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.8.1,<3.11"
+python = "^3.9,<3.11"
 numpy = "^1.22"
 
 [tool.poetry.dev-dependencies]
@@ -30,6 +30,7 @@ darglint = "^1.8.1"
 xdoctest = "^1.1.0"
 Sphinx = "^5.3.0"
 sphinx-autodoc-typehints = "^1.19.5"
+pandas-stubs = "^2.1.1"
 
 [build-system]
 requires = ["poetry>=0.12"]
