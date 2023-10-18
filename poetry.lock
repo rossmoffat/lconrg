@@ -84,7 +84,7 @@ yaml = ["pyyaml"]
 
 [[package]]
 name = "black"
-version = "23.9.1"
+version = "23.10.0"
 description = "The uncompromising code formatter."
 category = "dev"
 optional = false
@@ -174,22 +174,6 @@ description = "Docutils -- Python Documentation Utilities"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
-
-[[package]]
-name = "dparse"
-version = "0.6.3"
-description = "A parser for Python dependency files"
-category = "dev"
-optional = false
-python-versions = ">=3.6"
-
-[package.dependencies]
-packaging = "*"
-tomli = {version = "*", markers = "python_version < \"3.11\""}
-
-[package.extras]
-conda = ["pyyaml"]
-pipenv = ["pipenv (<=2022.12.19)"]
 
 [[package]]
 name = "exceptiongroup"
@@ -884,20 +868,6 @@ pygments = ">=2.13.0,<3.0.0"
 jupyter = ["ipywidgets (>=7.5.1,<9)"]
 
 [[package]]
-name = "safety"
-version = "1.10.3"
-description = "Checks installed dependencies for known vulnerabilities."
-category = "dev"
-optional = false
-python-versions = ">=3.5"
-
-[package.dependencies]
-Click = ">=6.0"
-dparse = ">=0.5.1"
-packaging = "*"
-requests = "*"
-
-[[package]]
 name = "six"
 version = "1.16.0"
 description = "Python 2 and 3 compatibility utilities"
@@ -1195,7 +1165,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-ena
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9,<3.11"
-content-hash = "f07633435a74e76042e5c571fc43c2f61cef31d05d7abdb0b07d5443ce4bf719"
+content-hash = "15c89894e7e0660b7f2dcd2bd6df977287398ffabe938be030a32fcb15723a8d"
 
 [metadata.files]
 alabaster = []
@@ -1273,7 +1243,6 @@ decorator = [
     {file = "decorator-5.1.1.tar.gz", hash = "sha256:637996211036b6385ef91435e4fae22989472f9d571faba8927ba8253acbc330"},
 ]
 docutils = []
-dparse = []
 exceptiongroup = []
 executing = []
 flake8 = []
@@ -1375,10 +1344,6 @@ pytz = []
 pyyaml = []
 requests = []
 rich = []
-safety = [
-    {file = "safety-1.10.3-py2.py3-none-any.whl", hash = "sha256:5f802ad5df5614f9622d8d71fedec2757099705c2356f862847c58c6dfe13e84"},
-    {file = "safety-1.10.3.tar.gz", hash = "sha256:30e394d02a20ac49b7f65292d19d38fa927a8f9582cdfd3ad1adbbc66c641ad5"},
-]
 six = [
     {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},
     {file = "six-1.16.0.tar.gz", hash = "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926"},

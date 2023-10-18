@@ -1,7 +1,7 @@
 """Levelised Cost of eNeRGy."""
 from collections import namedtuple
 from datetime import date
-from typing import Tuple, Union
+from typing import Any, Tuple, Union
 
 import numpy as np
 import numpy.typing as npt
@@ -164,7 +164,7 @@ class Plant:
             dtype="datetime64[Y]",
         )
         if type(num) is dict:
-            if ([x.year for x in num.keys()] != np.int32(date_range + 1970)).all():
+            if np.all([x.year for x in num.keys()] != np.int32(date_range + 1970)):
                 raise AttributeError("Input doesn't match plant lifetime!")
             else:
                 return (date_range, np.fromiter(num.values(), dtype=float))
@@ -233,11 +233,10 @@ class Plant:
             Tuple: Two numpy arrays, first showing dates and the second showing
                 generation in GWh.
         """
-        if type(load_factors) is tuple:
+        if isinstance(load_factors, tuple):
             self.check_dates_tuple(load_factors)
-            load_factor = load_factors[1]
-
-        if type(load_factors) is float:
+            load_factor: Any = load_factors[1]
+        elif isinstance(load_factors, float):
             load_factor = load_factors
 
         self.check_dates_tuple(self.availability)
@@ -280,18 +279,16 @@ class Plant:
             Tuple: Two numpy arrays, first showing dates and the second showing
                 fuel costs in kGBP.
         """
-        if type(fuel_prices) is tuple:
+        if isinstance(fuel_prices, tuple):
             self.check_dates_tuple(fuel_prices)
-            fuel_price = fuel_prices[1]
-
-        elif type(fuel_prices) is float:
+            fuel_price: Any = fuel_prices[1]
+        elif isinstance(fuel_prices, float):
             fuel_price = fuel_prices
 
-        if type(load_factors) is tuple:
+        if isinstance(load_factors, tuple):
             self.check_dates_tuple(load_factors)
-            load_factor = load_factors[1]
-
-        elif type(load_factors) is float:
+            load_factor: Any = load_factors[1]
+        elif isinstance(load_factors, float):
             load_factor = load_factors
 
         self.check_dates_tuple(self.availability)
@@ -337,18 +334,16 @@ class Plant:
             Tuple: Three numpy arrays, first showing dates, second showing cost of
                 emissions in kGBP, third showing cost of storage in kGBP.
         """
-        if type(carbon_prices) is tuple:
+        if isinstance(carbon_prices, tuple):
             self.check_dates_tuple(carbon_prices)
-            carbon_price = carbon_prices[1]
+            carbon_price: Any = carbon_prices[1]
+        elif isinstance(carbon_prices, float):
+            carbon_price = carbon_prices
 
-        elif type(carbon_prices) is float:
-            carbon_price = carbon_price
-
-        if type(load_factors) is tuple:
+        if isinstance(load_factors, tuple):
             self.check_dates_tuple(load_factors)
-            load_factor = load_factors[1]
-
-        elif type(load_factors) is float:
+            load_factor: Any = load_factors[1]
+        elif isinstance(load_factors, float):
             load_factor = load_factors
 
         self.check_dates_tuple(self.availability)
@@ -398,11 +393,10 @@ class Plant:
             Tuple: Two numpy arrays, first showing dates and the second showing
                 variable costs in kGBP.
         """
-        if type(load_factors) is tuple:
+        if isinstance(load_factors, tuple):
             self.check_dates_tuple(load_factors)
-            load_factor = load_factors[1]
-
-        elif type(load_factors) is float:
+            load_factor: Any = load_factors[1]
+        elif isinstance(load_factors, float):
             load_factor = load_factors
 
         self.check_dates_tuple(self.availability)

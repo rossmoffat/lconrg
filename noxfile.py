@@ -87,7 +87,7 @@ def safety(session: Session) -> None:
 def mypy(session: Session) -> None:
     """Type-check using mypy."""
     args = session.posargs or locations
-    install_with_constraints(session, "mypy", "numpy", "pandas-stubs")
+    install_with_constraints(session, "mypy", "numpy")
     session.run("mypy", *args)
 
 
