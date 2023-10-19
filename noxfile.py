@@ -28,14 +28,14 @@ def install_with_constraints(session: Session, *args: str, **kwargs: Any) -> Non
             f"--output={requirements.name}",
             external=True,
         )
-        session.install(f"--constraint={requirements.name}", *args, **kwargs)
+        session.install(f"--requirement={requirements.name}", *args, **kwargs)
 
 
 @nox.session(python=["3.9"])
 def tests(session: Session) -> None:
     """Run the test suite."""
     args = session.posargs or ["--cov", "-m", "not e2e"]
-    session.run("poetry", "install", "--no-dev", external=True)
+    session.run("poetry", "install", "--only=main", external=True)
     install_with_constraints(session, "coverage", "pytest", "pytest-cov", "pytest-mock")
     session.run("pytest", *args)
 
@@ -73,7 +73,7 @@ def safety(session: Session) -> None:
         session.run(
             "poetry",
             "export",
-            "--dev",
+            "--with=dev",
             "--format=requirements.txt",
             "--without-hashes",
             f"--output={requirements.name}",
@@ -103,7 +103,7 @@ def pytype(session: Session) -> None:
 def xdoctest(session: Session) -> None:
     """Run examples with xdoctest."""
     args = session.posargs or ["all"]
-    session.run("poetry", "install", "--no-dev", external=True)
+    session.run("poetry", "install", "--only=main", external=True)
     install_with_constraints(session, "xdoctest")
     session.run("python", "-m", "xdoctest", package, *args)
 
@@ -111,7 +111,7 @@ def xdoctest(session: Session) -> None:
 @nox.session(python="3.9")
 def docs(session: Session) -> None:
     """Build the documentation."""
-    session.run("poetry", "install", "--no-dev", external=True)
+    session.run("poetry", "install", "--only=main", external=True)
     install_with_constraints(session, "sphinx", "sphinx-autodoc-typehints")
     session.run("sphinx-build", "docs", "docs/_build")
 

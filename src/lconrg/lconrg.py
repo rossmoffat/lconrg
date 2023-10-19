@@ -524,7 +524,7 @@ class Plant:
         )
         cf.fillna(0, inplace=True)
         pv_cf = cf.multiply(
-            pvs_df[pvs_df.index.isin(cf.index)]["discount_rate"], axis=0
+            pvs_df[pvs_df.index.isin(cf.index)]["discount_rate"], axis=0  # type: ignore
         )
         return pv_cf
 
@@ -571,8 +571,12 @@ class Plant:
             ]
         ]
         lrmc_df = pv_cf[["capital_kgbp", "fixed_opex_kgbp"]]
-        srmc = sum(srmc_df.stack().values) / sum(pv_cf.production_GWth.values)
-        lrmc = sum(lrmc_df.stack().values) / sum(pv_cf.production_GWth.values)
+        srmc = sum(srmc_df.stack().values) / sum(  # type: ignore
+            pv_cf.production_GWth.values
+        )
+        lrmc = sum(lrmc_df.stack().values) / sum(  # type: ignore
+            pv_cf.production_GWth.values
+        )
         lcoe = srmc + lrmc
         full = pv_cf.drop("production_GWth", axis=1).sum() / pv_cf.production_GWth.sum()
 
@@ -641,7 +645,7 @@ class Plant:
         pv_cf.drop("capital_kgbp", axis=1, inplace=True)
         pv_profile = (
             pv_cf.drop("production_GWth", axis=1)
-            .divide(pv_cf.production_GWth, axis=0)
+            .divide(pv_cf.production_GWth, axis=0)  # type: ignore
             .sum(axis=1)
         )
         return pv_profile
