@@ -17,7 +17,7 @@ def test_version():
 
 
 @pytest.fixture
-def example_Plant_data():
+def float_Plant_data():
     """Dummy data for Plant class."""
     return {
         "fuel": "gas",
@@ -37,21 +37,65 @@ def example_Plant_data():
     }
 
 
+@pytest.fixture
+def dict_Plant_data():
+    """Dummy data for Plant class."""
+    return {
+        "fuel": "gas",
+        "hhv_eff": 0.55,
+        "availability": {
+            datetime.date(2022, 1, 1): 0.91,
+            datetime.date(2023, 1, 1): 0.91,
+            datetime.date(2024, 1, 1): 0.91,
+            datetime.date(2025, 1, 1): 0.91,
+            datetime.date(2026, 1, 1): 0.91,
+        },
+        "cod_date": datetime.date(2022, 1, 1),
+        "lifetime": 5,
+        "net_capacity_mw": 700,
+        "capital_cost": {
+            datetime.date(2020, 1, 1): 100000,
+            datetime.date(2021, 1, 1): 100000,
+        },
+        "cost_base_date": datetime.date(2022, 1, 1),
+        "discount_rate": 0.1,
+        "fuel_carbon_intensity": 0.185,
+        "carbon_capture_rate": 0.95,
+    }
+
+
+@pytest.mark.parametrize(
+    "example_Plant_data",
+    [
+        pytest.param(
+            "float_Plant_data",
+            id="Plant floats",
+        ),
+        pytest.param(
+            "dict_Plant_data",
+            id="Plant dicts",
+        ),
+    ],
+)
 @pytest.mark.parametrize(
     "opex",
     [
-        40.0,
-        {
-            datetime.date(2022, 1, 1): 40.0,
-            datetime.date(2023, 1, 1): 40.0,
-            datetime.date(2024, 1, 1): 40.0,
-            datetime.date(2025, 1, 1): 40.0,
-            datetime.date(2026, 1, 1): 40.0,
-        },
+        pytest.param(40.0, id="opex single float"),
+        pytest.param(
+            {
+                datetime.date(2022, 1, 1): 40.0,
+                datetime.date(2023, 1, 1): 40.0,
+                datetime.date(2024, 1, 1): 40.0,
+                datetime.date(2025, 1, 1): 40.0,
+                datetime.date(2026, 1, 1): 40.0,
+            },
+            id="opex dict",
+        ),
     ],
 )
-def test_Plant(example_Plant_data, opex):
+def test_Plant(example_Plant_data, opex, request):
     """Tests the plant class constructor."""
+    example_Plant_data = request.getfixturevalue(example_Plant_data)
     test_plant_object = Plant(
         **example_Plant_data, fixed_opex_kgbp=opex, variable_opex_gbp_hr=opex
     )
@@ -87,6 +131,19 @@ def test_present_value():
 
 
 @pytest.mark.parametrize(
+    "example_Plant_data",
+    [
+        pytest.param(
+            "float_Plant_data",
+            id="Plant floats",
+        ),
+        pytest.param(
+            "dict_Plant_data",
+            id="Plant dicts",
+        ),
+    ],
+)
+@pytest.mark.parametrize(
     "opex",
     [
         40.0,
@@ -99,8 +156,9 @@ def test_present_value():
         },
     ],
 )
-def test_fuel_costs_profile(example_Plant_data, opex):
+def test_fuel_costs_profile(example_Plant_data, opex, request):
     """Should return a Tuple of dates and gas costs."""
+    example_Plant_data = request.getfixturevalue(example_Plant_data)
     test_plant_object = Plant(
         **example_Plant_data, fixed_opex_kgbp=opex, variable_opex_gbp_hr=opex
     )
@@ -116,3 +174,20 @@ def test_fuel_costs_profile(example_Plant_data, opex):
         np.full(5, 111363.63636363635),
     )
     assert (result[0] == expected[0]).all() | (result[1] == expected[1]).all()
+
+
+# print repr for plant class
+# test exceptions for hhv_eff and availability
+# test attribute errors
+# test type errors
+# test check dates series
+# test energy production profile function
+# test tuple provision for fuel costs profile
+# test tuple provision of load factors in fuel cost profile
+# test carbon cost profile
+# test variable cost profile
+# test fixed cost profile
+# test build cashflows
+# test build pv cashflows
+# test calculate lcoe
+# test calculate annual lcoe
