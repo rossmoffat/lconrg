@@ -1,2 +1,2 @@
 [![Tests](https://github.com/rossmoffat/lconrg/workflows/Tests/badge.svg)](https://github.com/rossmoffat/lconrg/actions?workflow=Tests)
-[![Codecov](https://codecov.io/gh/rossmoffat/lconrg/branch/master/graph/badge.svg)](https://codecov.io/gh/<your-username>/hypermodern-python)
+[![Codecov](https://codecov.io/gh/rossmoffat/lconrg/branch/master/graph/badge.svg)](https://codecov.io/gh/rossmoffat/lconrg)
