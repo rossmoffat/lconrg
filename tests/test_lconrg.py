@@ -13,7 +13,7 @@ from lconrg.lconrg import (
 
 def test_version():
     """Tests the version number is accurate."""
-    assert __version__ == "0.2.0"
+    assert __version__ == "2023.10.0"
 
 
 @pytest.fixture
