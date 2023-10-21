@@ -110,24 +110,25 @@ class Plant:
             capex += f"        {key:%Y}: {values}\n"
 
         opex = [
-            f"        {self.fixed_opex_kgbp[0].item(i)}"
-            + f": {self.fixed_opex_kgbp[1].item(i)}\n"
-            for i in self.fixed_opex_kgbp[0]
+            f"      {year}" + f": {self.fixed_opex_kgbp[1][i]}\n"
+            for i, year in enumerate(self.fixed_opex_kgbp[0])
         ]
+        opex = "".join(opex)
 
         return (
             f"Plant(Fuel: {self.fuel}\n"
             + f"      HHV Efficiency: {self.hhv_eff: .2%}\n"
-            + f"      Availability Factor: {self.availability: .2%}\n"
+            + "      Average Availability Factor: "
+            + f"{np.mean(self.availability[1]): .2%}\n"
             + f"      COD Date: {self.cod:%d-%b-%Y}\n"
             + f"      Expected Lifetime: {self.lifetime} years\n"
             + f"      Net Capacity: {self.net_capacity_mw} MW\n"
             + "      Capital Cost (£/kW): "
             + f"{(sum(self.capital_cost.values()) / self.net_capacity_mw)}\n"
             + f"      Capital Cost (£k): {sum(self.capital_cost.values())}\n"
-            + f"{capex}"
+            + f"        {capex}"
             + "      Fixed Operating Costs (£k):\n"
-            + f"{opex}"
+            + f"        {opex}"
             + f"      Variable Opex (£ per hour): {self.variable_opex_gbp_hr}\n"
             + f"      Cost Base Date: {self.cost_base: %d-%b-%Y}\n"
             + f"      Discount Rate: {self.discount_rate: .2%}\n"
