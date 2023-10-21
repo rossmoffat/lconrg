@@ -557,8 +557,7 @@ class Plant:
             hours_in_year (int): Number of hours in a year. Defaults to 8760.
 
         Returns:
-            Tuple: The calculated Levelised Cost of Energy including Long-Run
-                and Short-Run Marginal Cost and full breakdown of components.
+            Tuple: Calculated Levelised Cost of Energy.
         """
         pv_cf = self.build_pv_cashflows(
             load_factors, fuel_prices, carbon_prices, co2_transport_storage_cost
