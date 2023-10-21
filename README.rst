@@ -4,8 +4,14 @@ Levelised Cost of eNeRGy Calculator
 .. image:: https://github.com/rossmoffat/lconrg/workflows/Tests/badge.svg
     :target: https://github.com/rossmoffat/lconrg/actions?workflow=Tests
     :alt: Test Status
+.. image:: https://codecov.io/gh/rossmoffat/lconrg/branch/master/graph/badge.svg
+    :target: https://codecov.io/gh/rossmoffat/lconrg
+    :alt: Code Coverage
+.. image:: https://img.shields.io/pypi/v/lconrg.svg
+    :target: https://pypi.org/project/lconrg/
+    :alt: PyPI
+.. image:: https://readthedocs.org/projects/lcorng/badge/
+    :target: https://lconrg.readthedocs.io/
+    :alt: Read the Docs
 
-.. [![Tests](https://github.com/rossmoffat/lconrg/workflows/Tests/badge.svg)](https://github.com/rossmoffat/lconrg/actions?workflow=Tests)
-.. [![Codecov](https://codecov.io/gh/rossmoffat/lconrg/branch/master/graph/badge.svg)](https://codecov.io/gh/rossmoffat/lconrg)
-.. [![PyPI](https://img.shields.io/pypi/v/lconrg.svg)](https://pypi.org/project/lconrg/)
-.. [![Read the Docs](https://readthedocs.org/projects/lcorng/badge/)](https://lconrg.readthedocs.io/)
+This is a python package for calculating the levelised cost of energy for a given set of input parameters.
