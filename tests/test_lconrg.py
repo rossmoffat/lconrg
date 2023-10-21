@@ -324,7 +324,7 @@ def test_build_profile():
             np.array([0.91, 0.91, 0.91, 0.91, 0.91]),
         ]
     )
-    assert (result == expected).all()
+    assert (result == expected).all()  # type: ignore
 
 
 def test_fuel_costs_profile_tuple():

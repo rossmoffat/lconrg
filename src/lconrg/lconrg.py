@@ -109,11 +109,11 @@ class Plant:
         for key, values in self.capital_cost.items():
             capex += f"        {key:%Y}: {values}\n"
 
-        opex = [
+        opex_list = [
             f"        {year}" + f": {self.fixed_opex_kgbp[1][i]}\n"
             for i, year in enumerate(self.fixed_opex_kgbp[0])
         ]
-        opex = "".join(opex)
+        opex = "".join(opex_list)
 
         return (
             f"Plant(Fuel: {self.fuel}\n"
