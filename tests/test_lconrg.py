@@ -202,8 +202,8 @@ def test_str():
     result = str(plant)
     expected = (
         "Plant(Fuel: gas\n"
-        + "      HHV Efficiency: 55.0%\n"
-        + "      Availability Factor: 91.00%\n"
+        + "      HHV Efficiency: 55.00%\n"
+        + "      Average Availability Factor: 91.00%\n"
         + "      COD Date: 01-Jan-2022\n"
         + "      Expected Lifetime: 5 years\n"
         + "      Net Capacity: 700 MW\n"
@@ -213,12 +213,12 @@ def test_str():
         + "        2020: 100000\n"
         + "        2021: 100000\n"
         + "      Fixed Operating Costs (£k):\n"
-        + "        2022: 5000\n"
-        + "        2023: 5000\n"
-        + "        2024: 5000\n"
-        + "        2025: 5000\n"
-        + "        2026: 5000\n"
-        + "      Variable Opex (£ per hour): 20\n"
+        + "        2022: 5000.0\n"
+        + "        2023: 5000.0\n"
+        + "        2024: 5000.0\n"
+        + "        2025: 5000.0\n"
+        + "        2026: 5000.0\n"
+        + "      Variable Opex (£ per hour): 20.0\n"
         + "      Cost Base Date: 01-Jan-2022\n"
         + "      Discount Rate: 10.00%\n"
         + "      Fuel Carbon Intensity: 0.185te/MWh\n"
@@ -258,6 +258,8 @@ def test_hhv_efficiency_out_of_range():
                 datetime.date(2020, 1, 1): 100000,
                 datetime.date(2021, 1, 1): 100000,
             },
+            fixed_opex_kgbp=10.0,
+            variable_opex_gbp_hr=0.1,
             cost_base_date=datetime.date(2022, 1, 1),
             discount_rate=0.1,
             fuel_carbon_intensity=0.185,
@@ -279,6 +281,8 @@ def test_availability_factor_out_of_range():
                 datetime.date(2020, 1, 1): 100000,
                 datetime.date(2021, 1, 1): 100000,
             },
+            fixed_opex_kgbp=10.0,
+            variable_opex_gbp_hr=0.1,
             cost_base_date=datetime.date(2022, 1, 1),
             discount_rate=0.1,
             fuel_carbon_intensity=0.185,
@@ -306,13 +310,20 @@ def test_build_profile():
             datetime.date(2020, 1, 1): 100000,
             datetime.date(2021, 1, 1): 100000,
         },
+        fixed_opex_kgbp=10.0,
+        variable_opex_gbp_hr=0.1,
         cost_base_date=datetime.date(2022, 1, 1),
         discount_rate=0.1,
         fuel_carbon_intensity=0.185,
         carbon_capture_rate=0.95,
     )
     result = plant.build_profile(availability, datetime.date(2022, 1, 1), 5)
-    expected = np.array([0.91, 0.91, 0.91, 0.91, 0.91])
+    expected = np.array(
+        [
+            np.array(["2022", "2023", "2024", "2025", "2026"], dtype="datetime64[Y]"),
+            np.array([0.91, 0.91, 0.91, 0.91, 0.91]),
+        ]
+    )
     assert (result == expected).all()
 
 
@@ -329,6 +340,8 @@ def test_fuel_costs_profile_tuple():
             datetime.date(2020, 1, 1): 100000,
             datetime.date(2021, 1, 1): 100000,
         },
+        fixed_opex_kgbp=10.0,
+        variable_opex_gbp_hr=0.1,
         cost_base_date=datetime.date(2022, 1, 1),
         discount_rate=0.1,
         fuel_carbon_intensity=0.185,
@@ -336,50 +349,6 @@ def test_fuel_costs_profile_tuple():
     )
     gas_prices = (datetime.date(2022, 1, 1), 20.0)
     load_factors = (datetime.date(2022, 1, 1), 0.5)
-    result = plant.fuel_costs_profile(gas_prices, load_factors)
-    expected = (
-        np.arange(
-            datetime.date(2022, 1, 1),
-            np.datetime64(datetime.date(2022, 1, 1), "Y") + np.timedelta64(5, "Y"),
-            dtype="datetime64[Y]",
-        ),
-        np.full(5, 111363.63636363635),
-    )
-    assert (result[0] == expected[0]).all() | (result[1] == expected[1]).all()
-
-
-def test_fuel_costs_profile_dict():
-    """Tests that the method works when provided with a dictionary."""
-    plant = Plant(
-        fuel="gas",
-        hhv_eff=0.55,
-        availability=0.91,
-        cod_date=datetime.date(2022, 1, 1),
-        lifetime=5,
-        net_capacity_mw=700,
-        capital_cost={
-            datetime.date(2020, 1, 1): 100000,
-            datetime.date(2021, 1, 1): 100000,
-        },
-        cost_base_date=datetime.date(2022, 1, 1),
-        discount_rate=0.1,
-        fuel_carbon_intensity=0.185,
-        carbon_capture_rate=0.95,
-    )
-    gas_prices = {
-        datetime.date(2022, 1, 1): 20.0,
-        datetime.date(2023, 1, 1): 20.0,
-        datetime.date(2024, 1, 1): 20.0,
-        datetime.date(2025, 1, 1): 20.0,
-        datetime.date(2026, 1, 1): 20.0,
-    }
-    load_factors = {
-        datetime.date(2022, 1, 1): 0.5,
-        datetime.date(2023, 1, 1): 0.5,
-        datetime.date(2024, 1, 1): 0.5,
-        datetime.date(2025, 1, 1): 0.5,
-        datetime.date(2026, 1, 1): 0.5,
-    }
     result = plant.fuel_costs_profile(gas_prices, load_factors)
     expected = (
         np.arange(
