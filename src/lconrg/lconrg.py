@@ -537,30 +537,35 @@ class Plant:
         co2_transport_storage_cost: float,
         hours_in_year: int = 8760,
     ) -> Tuple:
-        """Calculates the Levelised Cost of Energy and returns as a Named Tuple.
+        """Calculates the Levelised Cost of Energy.
 
         Args:
-            load_factors (Union[float, Tuple]): Factor representing % of running in
-                the year.  Can be either a single figure which is applied to each
-                year or a profile in the form of a Tuple of two numpy arrays, the
-                first containing the date, the second the load factors.
-            fuel_prices (Union[float, Tuple]): Factor representing cost of fuel in
-                GBP/HHV MWh.  Can be either a single figure which is applied to each
-                year or a profile in the form of a Tuple of two numpy arrays, the
-                first containing the date, the second the fuel prices.
-            carbon_prices (Union[float, Tuple]): Factor representing cost to emit
-                carbon in GBP/te.  Can be either a single figure which is applied
-                to each year or a profile in the form of a Tuple of two numpy
-                arrays, the first containing the date, the second the carbon prices.
-            co2_transport_storage_cost (float): Cost to transport and store carbon in
-                GBP/te.
+            load_factors: Factor representing % of running in the year.
+                Can be either a single figure which is applied to each
+                year or a profile in the form of a Tuple of two numpy
+                arrays, the first containing the date, the second the
+                load factors.
+            fuel_prices: Factor representing cost of fuel in GBP/HHV MWh.
+                Can be either a single figure which is applied to each
+                year or a profile in the form of a Tuple of two numpy
+                arrays, the first containing the date, the second the fuel prices.
+            carbon_prices: Factor representing cost to emit carbon in GBP/te.
+                Can be either a single figure which is applied to each year
+                or a profile in the form of a Tuple of two numpy arrays, the
+                first containing the date, the second the carbon prices.
+            co2_transport_storage_cost: Cost to transport and store
+                carbon in GBP/te.
             hours_in_year (int): Number of hours in a year. Defaults to 8760.
 
         Returns:
-            Tuple: Calculated Levelised Cost of Energy.
+            Calculated Levelised Cost of Energy.
         """
         pv_cf = self.build_pv_cashflows(
-            load_factors, fuel_prices, carbon_prices, co2_transport_storage_cost
+            load_factors,
+            fuel_prices,
+            carbon_prices,
+            co2_transport_storage_cost,
+            hours_in_year,
         )
         srmc_df = pv_cf[
             [
