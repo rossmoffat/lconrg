@@ -71,3 +71,5 @@ method takes additional parameters including ``load_factors``,
 ``fuel_prices``, ``carbon_prices`` and ``co2_transport_storage_cost``.
 
 .. autofunction:: lconrg.lconrg.Plant.calculate_lcoe
+
+.. autofunction:: lconrg.lconrg.Plant.build_profile

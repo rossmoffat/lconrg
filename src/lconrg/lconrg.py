@@ -142,7 +142,7 @@ class Plant:
         """Checks input and builds or returns profile of prices.
 
         Args:
-            num (Union[float, dict[date, float]]): The values to be
+            num (float or dict {date, float}): The values to be
                 used for the profile. Can either be a dict with keys of
                 date and value, or can be a single float which is used
                 to build a flat profile.
@@ -150,8 +150,8 @@ class Plant:
             years (int): The number of years to include in the profile.
 
         Returns:
-            Tuple: Two numpy ndarrays, the first containing Date and
-                the second Values.
+            Tuple (NDArrayDate, NDArrayFloat): Two numpy ndarrays, the
+            first containing year in numpy.datetime64 and the second values.
 
         Raises:
              AttributeError: The dates in the dict don't match the
