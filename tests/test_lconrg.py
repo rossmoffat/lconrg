@@ -18,7 +18,7 @@ def test_version():
 
 @pytest.fixture
 def float_Plant_data():
-    """Dummy data for Plant class."""
+    """Create dummy data for Plant class."""
     return {
         "fuel": "gas",
         "hhv_eff": 0.55,
@@ -39,7 +39,7 @@ def float_Plant_data():
 
 @pytest.fixture
 def dict_Plant_data():
-    """Dummy data for Plant class."""
+    """Create dummy data for Plant class."""
     return {
         "fuel": "gas",
         "hhv_eff": 0.55,
