@@ -2,6 +2,7 @@
 import datetime
 
 import numpy as np
+import pandas as pd
 import pytest
 
 from lconrg import __version__
@@ -359,3 +360,127 @@ def test_fuel_costs_profile_tuple():
         np.full(5, 111363.63636363635),
     )
     assert (result[0] == expected[0]).all() | (result[1] == expected[1]).all()
+
+
+def test_build_cashflows():
+    """Tests the build_cashflows method."""
+    plant_data = {
+        "fuel": "gas",
+        "hhv_eff": 0.55,
+        "availability": 0.91,
+        "cod_date": datetime.date(2022, 1, 1),
+        "lifetime": 3,
+        "net_capacity_mw": 700,
+        "capital_cost": {
+            datetime.date(2020, 1, 1): 100000,
+            datetime.date(2021, 1, 1): 100000,
+        },
+        "fixed_opex_kgbp": 5000.0,
+        "variable_opex_gbp_hr": 20.0,
+        "cost_base_date": datetime.date(2022, 1, 1),
+        "discount_rate": 0.1,
+        "fuel_carbon_intensity": 0.185,
+        "carbon_capture_rate": 0.95,
+    }
+    plant = Plant(**plant_data)
+    load_factors = pd.Series(
+        [0.5, 0.6, 0.7],
+        index=[
+            datetime.date(2022, 1, 1),
+            datetime.date(2023, 1, 1),
+            datetime.date(2024, 1, 1),
+        ],
+    )
+    fuel_prices = pd.Series(
+        [20.0, 22.0, 24.0],
+        index=[
+            datetime.date(2022, 1, 1),
+            datetime.date(2023, 1, 1),
+            datetime.date(2024, 1, 1),
+        ],
+    )
+    carbon_prices = pd.Series(
+        [10.0, 12.0, 14.0],
+        index=[
+            datetime.date(2022, 1, 1),
+            datetime.date(2023, 1, 1),
+            datetime.date(2024, 1, 1),
+        ],
+    )
+    co2_transport_storage_cost = 5.0
+    hours_in_year = 8760
+
+    result = plant.build_cashflows(
+        load_factors,
+        fuel_prices,
+        carbon_prices,
+        co2_transport_storage_cost,
+        hours_in_year,
+    )
+
+    # Test that the returned object is a pandas DataFrame
+    assert isinstance(result, pd.DataFrame)
+
+    # Test that the DataFrame has the expected columns
+    expected_columns = [
+        "production_GWth",
+        "capital_kgbp",
+        "fixed_opex_kgbp",
+        "variable_opex_kgbp",
+        "fuel_kgbp",
+        "carbon_emissions_kgbp",
+        "carbon_storage_kgbp",
+    ]
+    assert result.columns.tolist() == expected_columns
+
+    # Test that the DataFrame has the expected index
+    expected_index = pd.Index(
+        np.array(
+            [
+                datetime.date(2020, 1, 1),
+                datetime.date(2021, 1, 1),
+                datetime.date(2022, 1, 1),
+                datetime.date(2023, 1, 1),
+                datetime.date(2024, 1, 1),
+            ]
+        )
+    )
+    assert result.index.equals(expected_index)
+
+    # Test that the DataFrame values are as expected
+    expected_values = np.array(
+        [
+            [np.nan, 100000, np.nan, np.nan, np.nan, np.nan, np.nan],
+            [np.nan, 100000, np.nan, np.nan, np.nan, np.nan, np.nan],
+            [
+                2790.060,
+                np.nan,
+                5000.0,
+                79.7160,
+                101456.727273,
+                469.237364,
+                4457.754955,
+            ],
+            [
+                3348.072000,
+                np.nan,
+                5000.0,
+                95.659200,
+                133922.88,
+                675.701804,
+                5349.305945,
+            ],
+            [
+                3906.084,
+                np.nan,
+                5000.0,
+                111.6024,
+                170447.301818,
+                919.705233,
+                6240.856936,
+            ],
+        ]
+    )
+    assert np.allclose(
+        result.values, expected_values, rtol=1e-5, atol=1e-5, equal_nan=True
+    )
