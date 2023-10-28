@@ -254,7 +254,7 @@ class Plant:
 
     def energy_production_profile(
         self,
-        load_factors: Union[float, tuple[NDArrayDate, NDArrayFloat]],
+        load_factors: Union[float, tuple[NDArrayDate, NDArrayFloat], pd.Series],
         hours_in_year: int = 8760,
     ) -> tuple[NDArrayDate, NDArrayFloat]:
         """
@@ -275,12 +275,22 @@ class Plant:
         tuple
             Two numpy arrays, first showing dates and the second showing
             generation in GWh.
+
+        Raises
+        ------
+        TypeError
+            If the load_factors is neither a float nor a tuple.
         """
         if isinstance(load_factors, tuple):
             self.check_dates_tuple(load_factors)
             load_factor: Any = load_factors[1]
         elif isinstance(load_factors, float):
             load_factor = load_factors
+        elif isinstance(load_factors, pd.Series):
+            load_factor = self.pd_series_to_daterange_tuple(load_factors)
+            load_factor = load_factor[1]
+        else:
+            raise TypeError()
 
         self.check_dates_tuple(self.availability)
         availability = self.availability[1]
@@ -301,8 +311,8 @@ class Plant:
 
     def fuel_costs_profile(
         self,
-        fuel_prices: Union[float, tuple[NDArrayDate, NDArrayFloat]],
-        load_factors: Union[float, tuple[NDArrayDate, NDArrayFloat]],
+        fuel_prices: Union[float, tuple[NDArrayDate, NDArrayFloat], pd.Series],
+        load_factors: Union[float, tuple[NDArrayDate, NDArrayFloat], pd.Series],
         hours_in_year: int = 8760,
     ) -> tuple[NDArrayDate, NDArrayFloat]:
         """
@@ -328,18 +338,33 @@ class Plant:
         Tuple
             Two numpy arrays, first showing dates and the second showing fuel costs
             in kGBP.
+
+        Raises
+        ------
+        TypeError
+            If the fuel_prices or load_factors are neither a float nor a tuple.
         """
         if isinstance(fuel_prices, tuple):
             self.check_dates_tuple(fuel_prices)
             fuel_price: Any = fuel_prices[1]
         elif isinstance(fuel_prices, float):
             fuel_price = fuel_prices
+        elif isinstance(fuel_prices, pd.Series):
+            fuel_price = self.pd_series_to_daterange_tuple(fuel_prices)
+            fuel_price = fuel_price[1]
+        else:
+            raise TypeError()
 
         if isinstance(load_factors, tuple):
             self.check_dates_tuple(load_factors)
             load_factor: Any = load_factors[1]
         elif isinstance(load_factors, float):
             load_factor = load_factors
+        elif isinstance(load_factors, pd.Series):
+            load_factor = self.pd_series_to_daterange_tuple(load_factors)
+            load_factor = load_factor[1]
+        else:
+            raise TypeError()
 
         self.check_dates_tuple(self.availability)
         availability = self.availability[1]
@@ -360,8 +385,8 @@ class Plant:
 
     def carbon_cost_profile(
         self,
-        carbon_prices: Union[float, tuple[NDArrayDate, NDArrayFloat]],
-        load_factors: Union[float, tuple[NDArrayDate, NDArrayFloat]],
+        carbon_prices: Union[float, tuple[NDArrayDate, NDArrayFloat], pd.Series],
+        load_factors: Union[float, tuple[NDArrayDate, NDArrayFloat], pd.Series],
         co2_transport_storage_cost: float,
         hours_in_year: int = 8760,
     ) -> tuple[NDArrayDate, NDArrayFloat, NDArrayFloat]:
@@ -390,18 +415,33 @@ class Plant:
         Tuple
             Three numpy arrays, first showing dates, second showing cost of
             emissions in kGBP, third showing cost of storage in kGBP.
+
+        Raises
+        ------
+        TypeError
+            If the carbon_prices or load_factors are neither a float nor a tuple.
         """
         if isinstance(carbon_prices, tuple):
             self.check_dates_tuple(carbon_prices)
             carbon_price: Any = carbon_prices[1]
         elif isinstance(carbon_prices, float):
             carbon_price = carbon_prices
+        elif isinstance(carbon_prices, pd.Series):
+            carbon_price = self.pd_series_to_daterange_tuple(carbon_prices)
+            carbon_price = carbon_price[1]
+        else:
+            raise TypeError()
 
         if isinstance(load_factors, tuple):
             self.check_dates_tuple(load_factors)
             load_factor: Any = load_factors[1]
         elif isinstance(load_factors, float):
             load_factor = load_factors
+        elif isinstance(load_factors, pd.Series):
+            load_factor = self.pd_series_to_daterange_tuple(load_factors)
+            load_factor = load_factor[1]
+        else:
+            raise TypeError()
 
         self.check_dates_tuple(self.availability)
         availability = self.availability[1]
@@ -434,7 +474,7 @@ class Plant:
 
     def variable_cost_profile(
         self,
-        load_factors: Union[float, tuple[NDArrayDate, NDArrayFloat]],
+        load_factors: Union[float, tuple[NDArrayDate, NDArrayFloat], pd.Series],
         hours_in_year: int = 8760,
     ) -> tuple[NDArrayDate, NDArrayFloat]:
         """
@@ -455,12 +495,22 @@ class Plant:
         Tuple
             Two numpy arrays, first showing dates and the second showing
             variable costs in kGBP.
+
+        Raises
+        ------
+        TypeError
+            If the load_factors is neither a float nor a tuple.
         """
         if isinstance(load_factors, tuple):
             self.check_dates_tuple(load_factors)
             load_factor: Any = load_factors[1]
         elif isinstance(load_factors, float):
             load_factor = load_factors
+        elif isinstance(load_factors, pd.Series):
+            load_factor = self.pd_series_to_daterange_tuple(load_factors)
+            load_factor = load_factor[1]
+        else:
+            raise TypeError()
 
         self.check_dates_tuple(self.availability)
         availability = self.availability[1]
@@ -498,9 +548,9 @@ class Plant:
 
     def build_cashflows(
         self,
-        load_factors: Union[float, tuple[NDArrayDate, NDArrayFloat]],
-        fuel_prices: Union[float, tuple[NDArrayDate, NDArrayFloat]],
-        carbon_prices: Union[float, tuple[NDArrayDate, NDArrayFloat]],
+        load_factors: Union[float, tuple[NDArrayDate, NDArrayFloat], pd.Series],
+        fuel_prices: Union[float, tuple[NDArrayDate, NDArrayFloat], pd.Series],
+        carbon_prices: Union[float, tuple[NDArrayDate, NDArrayFloat], pd.Series],
         co2_transport_storage_cost: float,
         hours_in_year: int = 8760,
     ) -> pd.DataFrame:
@@ -509,17 +559,17 @@ class Plant:
 
         Parameters
         ----------
-        load_factors: float or Tuple of NDArrayDate, NDArrayFloat
+        load_factors: float or pandas.Series with datetime index
             Factor representing % of running in the year.  Can be either a
             single figure which is applied to each year or a profile in the
             form of a Tuple of two numpy arrays, the first containing the
             date, the second the load factors.
-        fuel_prices: float or Tuple of NDArrayDate, NDArrayFloat
+        fuel_prices: float or pandas.Series with datetime index
             Factor representing cost of fuel in GBP/HHV MWh.  Can be either a
             single figure which is applied to each year or a profile in the
             form of a Tuple of two numpy arrays, the first containing the date,
             the second the fuel prices.
-        carbon_prices: float or Tuple of NDArrayDate, NDArrayFloat
+        carbon_prices: float or pandas.Series with datetime index
             Factor representing cost to emit carbon in GBP/te.  Can be either
             a single figure which is applied to each year or a profile in the
             form of a Tuple of two numpy arrays, the first containing the date,
@@ -559,9 +609,9 @@ class Plant:
 
     def build_pv_cashflows(
         self,
-        load_factors: Union[float, tuple[NDArrayDate, NDArrayFloat]],
-        fuel_prices: Union[float, tuple[NDArrayDate, NDArrayFloat]],
-        carbon_prices: Union[float, tuple[NDArrayDate, NDArrayFloat]],
+        load_factors: Union[float, tuple[NDArrayDate, NDArrayFloat], pd.Series],
+        fuel_prices: Union[float, tuple[NDArrayDate, NDArrayFloat], pd.Series],
+        carbon_prices: Union[float, tuple[NDArrayDate, NDArrayFloat], pd.Series],
         co2_transport_storage_cost: float,
         hours_in_year: int = 8760,
     ) -> pd.DataFrame:
@@ -609,9 +659,9 @@ class Plant:
 
     def calculate_lcoe(
         self,
-        load_factors: Union[float, tuple[NDArrayDate, NDArrayFloat]],
-        fuel_prices: Union[float, tuple[NDArrayDate, NDArrayFloat]],
-        carbon_prices: Union[float, tuple[NDArrayDate, NDArrayFloat]],
+        load_factors: Union[float, tuple[NDArrayDate, NDArrayFloat], pd.Series],
+        fuel_prices: Union[float, tuple[NDArrayDate, NDArrayFloat], pd.Series],
+        carbon_prices: Union[float, tuple[NDArrayDate, NDArrayFloat], pd.Series],
         co2_transport_storage_cost: float,
         hours_in_year: int = 8760,
     ) -> Tuple:
@@ -698,9 +748,9 @@ class Plant:
 
     def calculate_annual_lcoe(
         self,
-        load_factors: Union[float, tuple[NDArrayDate, NDArrayFloat]],
-        fuel_prices: Union[float, tuple[NDArrayDate, NDArrayFloat]],
-        carbon_prices: Union[float, tuple[NDArrayDate, NDArrayFloat]],
+        load_factors: Union[float, tuple[NDArrayDate, NDArrayFloat], pd.Series],
+        fuel_prices: Union[float, tuple[NDArrayDate, NDArrayFloat], pd.Series],
+        carbon_prices: Union[float, tuple[NDArrayDate, NDArrayFloat], pd.Series],
         co2_transport_storage_cost: float,
         hours_in_year: int = 8760,
     ) -> pd.Series:
@@ -747,6 +797,29 @@ class Plant:
             .sum(axis=1)
         )
         return pv_profile
+
+    def pd_series_to_daterange_tuple(
+        self, series: pd.Series
+    ) -> tuple[NDArrayDate, NDArrayFloat]:
+        """
+        Convert a pandas series to a tuple of numpy arrays.
+
+        Parameters
+        ----------
+        series: pd.Series
+            The pandas series to be converted.
+
+        Returns
+        -------
+        Tuple
+            A tuple of numpy arrays, the first containing the date and the
+            second the values.
+        """
+        series = series[series.index.isin(self.date_range)]
+        return (
+            (series.index.to_numpy().astype("datetime64[Y]")),
+            np.array(series.values),
+        )
 
 
 def present_value_factor(
