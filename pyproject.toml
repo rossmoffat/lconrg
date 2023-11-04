@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "lconrg"
-version = "2023.10.0"
+version = "2023.11.3"
 description = ""
 authors = ["Your Name <you@example.com>"]
 
