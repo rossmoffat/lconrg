@@ -484,3 +484,28 @@ def test_build_cashflows():
     assert np.allclose(
         result.values, expected_values, rtol=1e-5, atol=1e-5, equal_nan=True
     )
+
+
+def test_calculate_kw_cost():
+    """Tests the calculate_kw_cost method."""
+    plant = Plant(
+        fuel="gas",
+        hhv_eff=0.33,
+        availability=0.91,
+        cod_date=datetime.date(2024, 1, 1),
+        lifetime=25,
+        net_capacity_mw=300.0,
+        capital_cost={
+            datetime.date(2021, 1, 1): 80000.0,
+            datetime.date(2022, 1, 1): 80000.0,
+        },
+        fixed_opex_kgbp=16000.0,
+        variable_opex_gbp_hr=750.0,
+        cost_base_date=datetime.date(2021, 1, 1),
+        discount_rate=0.08,
+        fuel_carbon_intensity=0.0,
+        carbon_capture_rate=0.0,
+    )
+    result = plant.calculate_kw_cost()
+    expected = 109.45066913662433
+    assert result == expected
