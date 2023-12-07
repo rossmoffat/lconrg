@@ -798,6 +798,36 @@ class Plant:
         )
         return pv_profile
 
+    def calculate_kw_cost(
+        self,
+    ) -> float:
+        """Calculate the cost per kW of the plant."""
+        discount_rate = (
+            "discount_rate",
+            present_value_factor(self.cost_base, self.discount_rate),
+        )
+        capital = (
+            "capital_kgbp",
+            self.build_profile(
+                self.capital_cost, next(iter(self.capital_cost)), len(self.capital_cost)
+            ),
+        )
+        fixed = ("fixed_opex_kgbp", self.fixed_cost_profile())
+        capacity = (
+            "capacity",
+            self.build_profile(self.net_capacity_mw, self.cod, self.lifetime),
+        )
+        source = [capital, fixed, capacity, discount_rate]
+
+        cf = pd.DataFrame(
+            {name: (pd.Series(data[1], index=data[0])) for name, data in source},
+        )
+        cf.fillna(0, inplace=True)
+        pv_cf = cf.multiply(cf["discount_rate"], axis=0)  # type: ignore
+        return sum(pv_cf[["capital_kgbp", "fixed_opex_kgbp"]].sum()) / sum(
+            pv_cf.capacity
+        )
+
     def pd_series_to_daterange_tuple(
         self, series: pd.Series
     ) -> tuple[NDArrayDate, NDArrayFloat]:
