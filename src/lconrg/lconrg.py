@@ -22,10 +22,10 @@ class Plant:
         availability: Union[float, dict[date, float]],
         cod_date: date,
         lifetime: int,
-        net_capacity_mw: float,
-        capital_cost: dict[date, float],
-        fixed_opex_kgbp: Union[float, dict[date, float]],
-        variable_opex_gbp_hr: Union[float, dict[date, float]],
+        net_capacity_mw: Union[float, int],
+        capital_cost: dict[date, Union[float, int]],
+        fixed_opex_kgbp: Union[float, int, dict[date, Union[float, int]]],
+        variable_opex_gbp_hr: Union[float, int, dict[date, Union[float, int]]],
         cost_base_date: date,
         discount_rate: float,
         fuel_carbon_intensity: float,
@@ -50,17 +50,17 @@ class Plant:
             The Commercial Operations Date.
         lifetime: int
             Lifetime in full years.
-        net_capacity_mw: float
+        net_capacity_mw: float or int
             Net power output of the plant in HHV MW.
-        capital_cost: dict of date, float
+        capital_cost: dict of date, float or int
             A dictionary containing the capital cost profile, where key
             is a date and value is the Capital cost in kGBP.
-        fixed_opex_kgbp: float or dict of date, float
+        fixed_opex_kgbp: float or int or dict of date, float or int
             The fixed opex profile, provided as either an annual figure to be
             repeated through the plant lifetime, or a profile of costs in a
             dictionary where key is the date and value is the fixed cost. Both
             in kGBP.
-        variable_opex_gbp_hr: float or dict of date, float
+        variable_opex_gbp_hr: float or int or dict of date, float or int
             The variable opex profile, provided as either an annual figure to
             be repeated through the plant lifetime, or a profile of costs in a
             dictionary where key is the date and value is the fixed cost.
@@ -96,12 +96,14 @@ class Plant:
         self.cod = cod_date
         self.lifetime = lifetime
         self.availability = self.build_profile(availability, self.cod, self.lifetime)
-        self.net_capacity_mw = net_capacity_mw
+        self.net_capacity_mw = float(net_capacity_mw)
         self.capital_cost = capital_cost
         self.fixed_opex_kgbp = self.build_profile(
             fixed_opex_kgbp, self.cod, self.lifetime
         )
-        self.variable_opex_gbp_hr = variable_opex_gbp_hr
+        self.variable_opex_gbp_hr = self.build_profile(
+            variable_opex_gbp_hr, self.cod, self.lifetime
+        )
         self.cost_base = cost_base_date
         self.discount_rate = discount_rate
         self.fuel_carbon_intensity = fuel_carbon_intensity
@@ -139,14 +141,15 @@ class Plant:
             + f"{np.mean(self.availability[1]):.2%}\n"
             + f"      COD Date: {self.cod:%d-%b-%Y}\n"
             + f"      Expected Lifetime: {self.lifetime} years\n"
-            + f"      Net Capacity: {self.net_capacity_mw} MW\n"
+            + f"      Net Capacity: {int(self.net_capacity_mw)} MW\n"
             + "      Capital Cost (£/kW): "
             + f"{(sum(self.capital_cost.values()) / self.net_capacity_mw)}\n"
             + f"      Capital Cost (£k): {sum(self.capital_cost.values())}\n"
             + f"{capex}"
             + "      Fixed Operating Costs (£k):\n"
             + f"{opex}"
-            + f"      Variable Opex (£ per hour): {self.variable_opex_gbp_hr}\n"
+            + "      Variable Opex (£ per hour): "
+            + f"{np.mean(self.variable_opex_gbp_hr[1])}\n"
             + f"      Cost Base Date: {self.cost_base:%d-%b-%Y}\n"
             + f"      Discount Rate: {self.discount_rate:.2%}\n"
             + f"      Fuel Carbon Intensity: {self.fuel_carbon_intensity}te/MWh\n"
@@ -154,14 +157,17 @@ class Plant:
         )
 
     def build_profile(
-        self, num: Union[float, dict[date, float]], start_date: date, years: int
+        self,
+        num: Union[float, int, dict[date, Union[float, int]]],
+        start_date: date,
+        years: int,
     ) -> Tuple[NDArrayDate, NDArrayFloat]:
         """
         Check input and return profile of prices.
 
         Parameters
         ----------
-        num: float or dict of date, float
+        num: float or int or dict of date, float or int
             The values to be used for the profile. Can either be a dict
             with keys of date and value, or can be a single float which
             is used to build a flat profile.
@@ -198,8 +204,11 @@ class Plant:
         elif type(num) is float:
             return (date_range, np.full(years, num))
 
+        elif type(num) is int:
+            return (date_range, np.full(years, float(num)))
+
         else:
-            raise TypeError()
+            raise TypeError(f"Unexpected type: {type(num)}")
 
     def check_dates_tuple(
         self, data: Union[tuple[date, float], tuple[NDArrayDate, NDArrayFloat]]
@@ -515,15 +524,14 @@ class Plant:
         self.check_dates_tuple(self.availability)
         availability = self.availability[1]
 
+        self.check_dates_tuple(self.variable_opex_gbp_hr)
+        variable_cost = self.variable_opex_gbp_hr[1]
+
         return (
             self.date_range,
             np.full(
                 self.lifetime,
-                self.variable_opex_gbp_hr
-                * load_factor
-                * availability
-                * hours_in_year
-                / 1000,
+                variable_cost * load_factor * availability * hours_in_year / 1000,
             ),
         )
 
