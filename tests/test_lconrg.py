@@ -84,11 +84,11 @@ def dict_Plant_data():
         pytest.param(40.0, id="opex single float"),
         pytest.param(
             {
-                datetime.date(2022, 1, 1): 40.0,
-                datetime.date(2023, 1, 1): 40.0,
-                datetime.date(2024, 1, 1): 40.0,
-                datetime.date(2025, 1, 1): 40.0,
-                datetime.date(2026, 1, 1): 40.0,
+                datetime.date(2022, 1, 1): 40,
+                datetime.date(2023, 1, 1): 40,
+                datetime.date(2024, 1, 1): 40,
+                datetime.date(2025, 1, 1): 40,
+                datetime.date(2026, 1, 1): 40,
             },
             id="opex dict",
         ),
