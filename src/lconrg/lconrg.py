@@ -320,7 +320,7 @@ class Plant:
 
     def fuel_costs_profile(
         self,
-        fuel_prices: Union[float, tuple[NDArrayDate, NDArrayFloat], pd.Series],
+        fuel_prices: Union[float, int, tuple[NDArrayDate, NDArrayFloat], pd.Series],
         load_factors: Union[float, tuple[NDArrayDate, NDArrayFloat], pd.Series],
         hours_in_year: int = 8760,
     ) -> tuple[NDArrayDate, NDArrayFloat]:
@@ -358,6 +358,8 @@ class Plant:
             fuel_price: Any = fuel_prices[1]
         elif isinstance(fuel_prices, float):
             fuel_price = fuel_prices
+        elif isinstance(fuel_prices, int):
+            fuel_price = float(fuel_prices)
         elif isinstance(fuel_prices, pd.Series):
             fuel_price = self.pd_series_to_daterange_tuple(fuel_prices)
             fuel_price = fuel_price[1]
@@ -394,9 +396,9 @@ class Plant:
 
     def carbon_cost_profile(
         self,
-        carbon_prices: Union[float, tuple[NDArrayDate, NDArrayFloat], pd.Series],
+        carbon_prices: Union[float, int, tuple[NDArrayDate, NDArrayFloat], pd.Series],
         load_factors: Union[float, tuple[NDArrayDate, NDArrayFloat], pd.Series],
-        co2_transport_storage_cost: float,
+        co2_transport_storage_cost: Union[float, int],
         hours_in_year: int = 8760,
     ) -> tuple[NDArrayDate, NDArrayFloat, NDArrayFloat]:
         """
@@ -404,7 +406,7 @@ class Plant:
 
         Parameters
         ----------
-        carbon_prices : float or tuple of NDArrayDate, NDArrayFloat
+        carbon_prices : float or int or tuple of NDArrayDate, NDArrayFloat
             Factor representing cost to emit carbon in GBP/te. Can be either a
             single figure which is applied to each year or a profile in the
             form of a Tuple of two numpy arrays, the first containing the date,
@@ -435,6 +437,8 @@ class Plant:
             carbon_price: Any = carbon_prices[1]
         elif isinstance(carbon_prices, float):
             carbon_price = carbon_prices
+        elif isinstance(carbon_prices, int):
+            carbon_price = float(carbon_prices)
         elif isinstance(carbon_prices, pd.Series):
             carbon_price = self.pd_series_to_daterange_tuple(carbon_prices)
             carbon_price = carbon_price[1]
