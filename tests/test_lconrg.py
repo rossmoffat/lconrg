@@ -1,4 +1,5 @@
 """Set of tests for lconrg module."""
+
 import datetime
 
 import numpy as np
@@ -423,6 +424,7 @@ def test_build_cashflows():
 
     # Test that the DataFrame has the expected columns
     expected_columns = [
+        "capacity_mw",
         "production_GWth",
         "capital_kgbp",
         "fixed_opex_kgbp",
@@ -450,9 +452,10 @@ def test_build_cashflows():
     # Test that the DataFrame values are as expected
     expected_values = np.array(
         [
-            [np.nan, 100000, np.nan, np.nan, np.nan, np.nan, np.nan],
-            [np.nan, 100000, np.nan, np.nan, np.nan, np.nan, np.nan],
+            [np.nan, np.nan, 100000, np.nan, np.nan, np.nan, np.nan, np.nan],
+            [np.nan, np.nan, 100000, np.nan, np.nan, np.nan, np.nan, np.nan],
             [
+                700.0,
                 2790.060,
                 np.nan,
                 5000.0,
@@ -462,6 +465,7 @@ def test_build_cashflows():
                 4457.754955,
             ],
             [
+                700.0,
                 3348.072000,
                 np.nan,
                 5000.0,
@@ -471,6 +475,7 @@ def test_build_cashflows():
                 5349.305945,
             ],
             [
+                700.0,
                 3906.084,
                 np.nan,
                 5000.0,

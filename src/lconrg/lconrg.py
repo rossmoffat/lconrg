@@ -1,4 +1,5 @@
 """Levelised Cost of eNeRGy."""
+
 from collections import namedtuple
 from datetime import date
 from typing import Any, Tuple, Union
@@ -612,8 +613,12 @@ class Plant:
         )
         co2emit = ("carbon_emissions_kgbp", (carbon_costs[0], carbon_costs[1]))
         co2_store = ("carbon_storage_kgbp", (carbon_costs[0], carbon_costs[2]))
+        capacity = (
+            "capacity_mw",
+            self.build_profile(self.net_capacity_mw, self.date_range[0], self.lifetime),
+        )
 
-        source = [production, capital, fixed, var, fuel, co2emit, co2_store]
+        source = [capacity, production, capital, fixed, var, fuel, co2emit, co2_store]
 
         return pd.DataFrame(
             {name: (pd.Series(data[1], index=data[0])) for name, data in source},
@@ -726,24 +731,52 @@ class Plant:
         srmc = sum(srmc_df.stack().values) / sum(  # type: ignore
             pv_cf.production_GWth.values
         )
+        srmc_cap = (  # type: ignore
+            sum(srmc_df.stack().values)  # type: ignore
+            / sum(pv_cf.capacity_mw.values)  # type: ignore
+            / 1000
+        )
         lrmc = sum(lrmc_df.stack().values) / sum(  # type: ignore
             pv_cf.production_GWth.values
         )
+        lrmc_cap = (  # type: ignore
+            sum(lrmc_df.stack().values)  # type: ignore
+            / sum(pv_cf.capacity_mw.values)  # type: ignore
+            / 1000
+        )
         lcoe = srmc + lrmc
-        full = pv_cf.drop("production_GWth", axis=1).sum() / pv_cf.production_GWth.sum()
+        lcoe_cap = srmc_cap + lrmc_cap
+        full = (
+            pv_cf.drop(["production_GWth", "capacity_mw"], axis=1).sum()
+            / pv_cf.production_GWth.sum()
+        )
+        full_cap = (
+            pv_cf.drop(["production_GWth", "capacity_mw"], axis=1).sum()
+            / pv_cf.capacity_mw.sum()
+            / 1000
+        )
 
         LCONRG = namedtuple(
             "LCONRG",
             [
-                "lcoe",
-                "srmc",
-                "lrmc",
-                "capital_kgbp",
-                "fixed_opex_kgbp",
-                "variable_opex_kgbp",
-                "fuel_kgbp",
-                "carbon_emissions_kgbp",
-                "carbon_storage_kgbp",
+                "lcoe_gbp_mwh",
+                "srmc_gbp_mwh",
+                "lrmc_gbp_mwh",
+                "capital_gbp_mwh",
+                "fixed_opex_gbp_mwh",
+                "variable_opex_gbp_mwh",
+                "fuel_gbp_mwh",
+                "carbon_emissions_gbp_mwh",
+                "carbon_storage_gbp_mwh",
+                "lcoe_gbp_kw",
+                "srmc_gbp_kw",
+                "lrmc_gbp_kw",
+                "capital_gbp_kw",
+                "fixed_opex_gbp_kw",
+                "variable_opex_gbp_kw",
+                "fuel_gbp_kw",
+                "carbon_emissions_gbp_kw",
+                "carbon_storage_gbp_kw",
             ],
         )
         return LCONRG(
@@ -756,6 +789,15 @@ class Plant:
             full.fuel_kgbp,
             full.carbon_emissions_kgbp,
             full.carbon_storage_kgbp,
+            lcoe_cap,
+            srmc_cap,
+            lrmc_cap,
+            full_cap.capital_kgbp,
+            full_cap.fixed_opex_kgbp,
+            full_cap.variable_opex_kgbp,
+            full_cap.fuel_kgbp,
+            full_cap.carbon_emissions_kgbp,
+            full_cap.carbon_storage_kgbp,
         )
 
     def calculate_annual_lcoe(
@@ -804,7 +846,7 @@ class Plant:
         ) * pv_cf.production_GWth
         pv_cf.drop("capital_kgbp", axis=1, inplace=True)
         pv_profile = (
-            pv_cf.drop("production_GWth", axis=1)
+            pv_cf.drop(["production_GWth", "capacity_mw"], axis=1)
             .divide(pv_cf.production_GWth, axis=0)  # type: ignore
             .sum(axis=1)
         )
