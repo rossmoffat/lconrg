@@ -734,7 +734,6 @@ class Plant:
         srmc_cap = (  # type: ignore
             sum(srmc_df.stack().values)  # type: ignore
             / sum(pv_cf.capacity_mw.values)  # type: ignore
-            / 1000
         )
         lrmc = sum(lrmc_df.stack().values) / sum(  # type: ignore
             pv_cf.production_GWth.values
@@ -742,7 +741,6 @@ class Plant:
         lrmc_cap = (  # type: ignore
             sum(lrmc_df.stack().values)  # type: ignore
             / sum(pv_cf.capacity_mw.values)  # type: ignore
-            / 1000
         )
         lcoe = srmc + lrmc
         lcoe_cap = srmc_cap + lrmc_cap
@@ -753,7 +751,6 @@ class Plant:
         full_cap = (
             pv_cf.drop(["production_GWth", "capacity_mw"], axis=1).sum()
             / pv_cf.capacity_mw.sum()
-            / 1000
         )
 
         LCONRG = namedtuple(
